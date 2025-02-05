@@ -3,5 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('landing.urls')),  # Connect landing app's URLs
+    path('', include('landing.urls')),
 ]

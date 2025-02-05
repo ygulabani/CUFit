@@ -31,6 +31,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="landing\apps.py" />
+    <Compile Include="landing\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="landing\models.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="landing\urls.py" />
     <Compile Include="landing\views.py" />
     <Compile Include="landing\__init__.py" />
@@ -44,7 +50,12 @@
     <Content Include="landing\static\images\CUFitness.png">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="landing\static\landing\images\Backdrop.png" />
+    <Content Include="landing\static\landing\css\styles.css" />
     <Content Include="landing\templates\landing\index.html" />
+    <Content Include="landing\templates\landing\login.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -52,9 +63,11 @@
     <Folder Include="landing\" />
     <Folder Include="landing\static\" />
     <Folder Include="landing\static\images\" />
+    <Folder Include="landing\static\landing\" />
+    <Folder Include="landing\static\landing\css\" />
+    <Folder Include="landing\static\landing\images\" />
     <Folder Include="landing\templates\" />
     <Folder Include="landing\templates\landing\" />
-    <Folder Include="landing\templates\preferences-mealsnumber\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

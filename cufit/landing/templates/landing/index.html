@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CU-Fit</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 100vh; /* Fullscreen */
+            width: 100vw;
+            background: url("{% static 'images/CUFitness.png' %}") no-repeat center center;
+            background-size: cover; /* Ensures full coverage */
             font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
         }
 
         .overlay {
@@ -23,46 +33,82 @@
         }
 
         .content {
-            position: relative;
+            position: absolute;
             text-align: center;
             color: white;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .circle {
-            width: 250px;
-            height: 250px;
+            width: 300px;
+            height: 300px;
             background-color: #8b1c2d;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
+            font-size: 48px;
             font-weight: bold;
             color: white;
+            text-transform: uppercase;
+            margin-bottom: 30px;
         }
 
         .button {
-            margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 15px 40px;
+            font-size: 22px;
             background-color: #0c5eaf;
             color: white;
-            border: none;
-            border-radius: 10px;
+            border: 2px solid transparent; /* Initially transparent border */
+            border-radius: 12px;
             cursor: pointer;
             text-decoration: none;
+            transition: 0.3s ease-in-out;
         }
 
             .button:hover {
-                background-color: #094a8a;
+                background-color: white;
+                color: #0c5eaf;
+                border: 2px solid #0c5eaf; /* Border appears on hover */
+                transform: scale(1.05); /* Slight zoom effect */
             }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .circle {
+                width: 250px;
+                height: 250px;
+                font-size: 36px;
+            }
+
+            .button {
+                font-size: 18px;
+                padding: 12px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .circle {
+                width: 200px;
+                height: 200px;
+                font-size: 28px;
+            }
+
+            .button {
+                font-size: 16px;
+                padding: 10px 25px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="content">
-        <div class="circle"><strong>CU-Fit</strong></div>
-        <a href="#" class="button">Get Started</a>
+        <div class="circle">CU-Fit</div>
+        <a href="{% url 'login' %}" class="button">Get Started</a>
     </div>
 </body>
 </html>

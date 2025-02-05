@@ -1,0 +1,90 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Sign Up</title>
+    <link rel="stylesheet" href="{% static 'landing/css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h2 id="form-title">LOGIN / SIGN UP</h2>
+
+            <!-- Login Form -->
+            <form id="login-form" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                {% if login_form.errors %}
+                <div class="alert alert-danger">
+                    Invalid username or password
+                </div>
+                {% endif %}
+
+                <label>USERNAME</label>
+                <input type="text" name="username" placeholder="Enter your username" required>
+
+                <label>PASSWORD</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+
+                <button type="submit" class="login-btn">LOGIN</button>
+
+                <p>
+                    Don't have an account? 🥺<br><br>
+                    <a href="#" class="signup-btn" id="show-signup">SIGN UP NOW!</a>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" method="POST" action="{% url 'signup' %}" style="display: none;">
+                {% csrf_token %}
+                {% if signup_form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in signup_form.errors.items %}
+                    {% for error in errors %}
+                    {{ error }}<br>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <label>USERNAME</label>
+                <input type="text" name="username" placeholder="Choose a username" required>
+
+                <label>EMAIL</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+
+                <label>PASSWORD</label>
+                <input type="password" name="password1" placeholder="Create a password" required>
+
+                <label>CONFIRM PASSWORD</label>
+                <input type="password" name="password2" placeholder="Confirm password" required>
+
+                <button type="submit" class="signup-btn">SIGN UP</button>
+
+                <p>
+                    Already have an account? 🧐<br><br>
+                    <a href="#" class="login-btn" id="show-login">LOGIN</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Form Toggle Script
+        document.getElementById("show-signup").addEventListener("click", function (event) {
+            event.preventDefault();
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("signup-form").style.display = "block";
+            document.getElementById("form-title").textContent = "CREATE ACCOUNT";
+        });
+
+        document.getElementById("show-login").addEventListener("click", function (event) {
+            event.preventDefault();
+            document.getElementById("signup-form").style.display = "none";
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("form-title").textContent = "LOGIN / SIGN UP";
+        });
+    </script>
+</body>
+</html>

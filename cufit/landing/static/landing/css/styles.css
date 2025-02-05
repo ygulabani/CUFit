@@ -1,0 +1,73 @@
+﻿body {
+    background: url("../images/Backdrop.png") no-repeat center center;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box {
+    background-color: maroon;
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+}
+
+button {
+    background-color: white;
+    color: maroon;
+    padding: 10px;
+    border: 1px solid maroon;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    button:hover {
+        background-color: maroon;
+        color: white;
+    }
+
+/* Style for the login button */
+.login-btn {
+    background-color: white;
+    color: maroon;
+    padding: 10px;
+    border: 1px solid maroon;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Style for the sign-up button */
+.signup-btn {
+    background-color: white;
+    color: maroon;
+    padding: 10px;
+    border: 1px solid maroon;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    /* Change color on hover */
+    .login-btn:hover, .signup-btn:hover {
+        background-color: maroon;
+        color: white;
+    }
