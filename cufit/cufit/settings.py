@@ -6,6 +6,12 @@ SECRET_KEY = 'dbf00724-93aa-4396-beb4-89cdd574d3ba'
 DEBUG = True
 ALLOWED_HOSTS = []
 
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+AUTH_USER_MODEL = 'landing.CustomUser'
+
+
 INSTALLED_APPS = [
     'landing.apps.LandingConfig',  
     'django.contrib.admin',
@@ -30,7 +36,7 @@ ROOT_URLCONF = 'cufit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'landing/templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
