@@ -13,6 +13,11 @@ User = get_user_model()
 def signup_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
+        if User.objects.filter(email=serializer.validated_data["email"]).exists():
+            return Response(
+                {"email": ["User with this email already exists"]},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         user = serializer.save()
         login(request, user)
         return Response(
