@@ -57,7 +57,7 @@
     <Content Include="landing\templates\landing\login.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="landing\templates\landing\preference.html" />
+    <Content Include="landing\templates\landing\preferences.html" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
