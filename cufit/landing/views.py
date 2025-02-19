@@ -159,3 +159,55 @@ class UserCRUD(APIView):
             return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Profile
+from django.contrib.auth.decorators import login_required
+
+@api_view(["POST"])
+@login_required
+def update_profile(request):
+    user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    profile.goal_selection = request.data.get("goal_selection", profile.goal_selection)
+    profile.diet_selection = request.data.get("diet_selection", profile.diet_selection)
+    profile.diet_preference = request.data.get("diet_preference", profile.diet_preference)
+    profile.cooking_time = request.data.get("cooking_time", profile.cooking_time)
+    profile.meal_plan_selection = request.data.get("meal_plan_selection", profile.meal_plan_selection)
+    profile.meal_plan = request.data.get("meal_plan", profile.meal_plan)
+    profile.activity_level = request.data.get("activity_level", profile.activity_level)
+    profile.exercise_routine = request.data.get("exercise_routine", profile.exercise_routine)
+    profile.pain_and_injury = request.data.get("pain_and_injury", profile.pain_and_injury)
+
+    profile.save()
+
+    return Response({"message": "Profile updated successfully!"}, status=200)
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Profile
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])  # Ensures only authenticated users can access
+def get_user_profile(request):
+    user = request.user
+    try:
+        profile = Profile.objects.get(user=user)
+        data = {
+            "username": user.username,
+            "goal_selection": profile.goal_selection or "Not selected",
+            "diet_selection": profile.diet_selection or "Not selected",
+            "diet_preference": profile.diet_preference or "Not selected",
+            "cooking_time": profile.cooking_time or "Not selected",
+            "meal_plan_selection": profile.meal_plan_selection or "Not selected",
+            "meal_plan": profile.meal_plan or "Not selected",
+            "activity_level": profile.activity_level or "Not selected",
+            "exercise_routine": profile.exercise_routine or "Not selected",
+            "pain_and_injury": profile.pain_and_injury or "Not selected",
+        }
+        return Response(data, status=200)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=404)
