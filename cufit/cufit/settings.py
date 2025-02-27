@@ -4,7 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "dbf00724-93aa-4396-beb4-89cdd574d3ba"
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -19,7 +19,7 @@ APPEND_SLASH = False
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-AUTH_USER_MODEL = 'landing.CustomUser'
+AUTH_USER_MODEL = "landing.CustomUser"
 
 
 INSTALLED_APPS = [
@@ -30,9 +30,18 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
     "landing",
     "corsheaders",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated"),
+}
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

@@ -7,15 +7,26 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib.auth import get_user_model
 
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework import permissions
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 User = get_user_model()  # This ensures Django uses CustomUser
 
 
 def index(request):
-    return render(request, 'landing/index.html')  # Ensure 'landing/index.html' exists
+    return render(request, "landing/index.html")  # Ensure 'landing/index.html' exists
+
 
 def login_page(request):
-    return render(request, 'landing/login.html')  # Ensure 'landing/login.html' exists
+    return render(request, "landing/login.html")  # Ensure 'landing/login.html' exists
+
 
 def login_signup_view(request):
     if request.method == "POST":
@@ -30,7 +41,9 @@ def login_signup_view(request):
             elif User.objects.filter(username=username).exists():
                 messages.error(request, "Username already taken!")
             else:
-                user = User.objects.create_user(username=username, email=email, password=password1)
+                user = User.objects.create_user(
+                    username=username, email=email, password=password1
+                )
                 Profile.objects.create(user=user)  # Create profile for the user
                 messages.success(request, "Signup successful! Please log in.")
 
@@ -50,26 +63,29 @@ def login_signup_view(request):
                 if not user.profile.diet_preference:
                     return redirect("diet_preferences")
 
-                return redirect("dashboard")  # Redirect to dashboard after setting preference
+                return redirect(
+                    "dashboard"
+                )  # Redirect to dashboard after setting preference
             else:
                 messages.error(request, "Incorrect username or password.")
 
     return render(request, "landing/login.html")
 
 
-
-
 def logout_view(request):
     logout(request)
     return redirect("login")
+
 
 @login_required
 def dashboard(request):
     return render(request, "dashboard.html")
 
+
 @login_required
 def diet_preference_view(request):
-    return render(request, 'landing/preferences.html')  # Ensure this template exists
+    return render(request, "landing/preferences.html")  # Ensure this template exists
+
 
 @login_required
 def diet_preference_view(request):
@@ -79,13 +95,19 @@ def diet_preference_view(request):
             request.user.profile.diet_preference = preference
             request.user.profile.save()
             messages.success(request, "Diet preference saved successfully!")
-            return redirect("dashboard")  # Redirect to the main page after setting preference
+            return redirect(
+                "dashboard"
+            )  # Redirect to the main page after setting preference
 
-    return render(request, "landing/preferences.html")  # Show the preference selection page
+    return render(
+        request, "landing/preferences.html"
+    )  # Show the preference selection page
+
 
 @login_required
 def dashboard_view(request):
     return render(request, "landing/dashboard.html")
+
 
 from django.contrib.auth import login, authenticate
 from .serializers import UserSerializer
@@ -99,23 +121,34 @@ User = get_user_model()
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([permissions.AllowAny])
 def signup_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         if User.objects.filter(email=serializer.validated_data["email"]).exists():
             return Response(
-                {"email": ["User with this email already exists"]},
-                status=status.HTTP_400_BAD_REQUEST
+                {"email": "User with this email already exists"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         user = serializer.save()
-        login(request, user)
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
         return Response(
-            {"message": "Signup successful"}, status=status.HTTP_201_CREATED
+            {
+                "message": "Signup successful",
+                "access token": access_token,
+                "refresh token": str(refresh),
+            },
+            status=status.HTTP_201_CREATED,
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
+@permission_classes([permissions.AllowAny])
 def login_view(request):
     username = request.data.get("username")
     password = request.data.get("password")
@@ -125,17 +158,30 @@ def login_view(request):
             {"error": "Username and password are required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    user = authenticate(username=username, password=password)
 
-    user = authenticate(request, username=username, password=password)
-    if user:
-        login(request, user)
-        return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
-    else:
+    if user is None:
         return Response(
-            {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            {"message": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
         )
 
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+
+    return Response(
+        {
+            "message": "login successful",
+            "access_token": access_token,
+            "refresh": str(refresh),
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
 class UserCRUD(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, id):
         users = User.objects.get(id=id)
         serializer = UserSerializer(users)
@@ -147,23 +193,34 @@ class UserCRUD(APIView):
             serializer = UserSerializer(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "User updated successfully"}, status=status.HTTP_200_OK)
+                return Response(
+                    {"message": "User updated successfully"}, status=status.HTTP_200_OK
+                )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
     def delete(self, request, id):
         try:
             user = User.objects.get(id=id)
             user.delete()
-            return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {"message": "User deleted successfully"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Profile
 from django.contrib.auth.decorators import login_required
+
 
 @api_view(["POST"])
 @login_required
@@ -173,22 +230,32 @@ def update_profile(request):
 
     profile.goal_selection = request.data.get("goal_selection", profile.goal_selection)
     profile.diet_selection = request.data.get("diet_selection", profile.diet_selection)
-    profile.diet_preference = request.data.get("diet_preference", profile.diet_preference)
+    profile.diet_preference = request.data.get(
+        "diet_preference", profile.diet_preference
+    )
     profile.cooking_time = request.data.get("cooking_time", profile.cooking_time)
-    profile.meal_plan_selection = request.data.get("meal_plan_selection", profile.meal_plan_selection)
+    profile.meal_plan_selection = request.data.get(
+        "meal_plan_selection", profile.meal_plan_selection
+    )
     profile.meal_plan = request.data.get("meal_plan", profile.meal_plan)
     profile.activity_level = request.data.get("activity_level", profile.activity_level)
-    profile.exercise_routine = request.data.get("exercise_routine", profile.exercise_routine)
-    profile.pain_and_injury = request.data.get("pain_and_injury", profile.pain_and_injury)
+    profile.exercise_routine = request.data.get(
+        "exercise_routine", profile.exercise_routine
+    )
+    profile.pain_and_injury = request.data.get(
+        "pain_and_injury", profile.pain_and_injury
+    )
 
     profile.save()
 
     return Response({"message": "Profile updated successfully!"}, status=200)
 
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Profile
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])  # Ensures only authenticated users can access

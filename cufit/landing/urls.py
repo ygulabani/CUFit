@@ -1,4 +1,5 @@
 ﻿from django.urls import path
+from django.shortcuts import render
 from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile
 from . import views
 
