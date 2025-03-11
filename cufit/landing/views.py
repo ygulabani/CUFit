@@ -220,10 +220,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Profile
 from django.contrib.auth.decorators import login_required
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["POST"])
 @login_required
+@permission_classes([IsAuthenticated])
 def update_profile(request):
     user = request.user
     profile, created = Profile.objects.get_or_create(user=user)
