@@ -14,29 +14,34 @@ import Login from "./pages/login";
 import BMICalculator from "./pages/Bmicalculator";
 import Calender from "./pages/Calender";
 import Home from "./pages/Home";
+import MealAroundCampus from "./pages/MealAroundCampus";
+import ExercisesList from "./pages/ExercisesList";
+import WorkoutMaster from "./pages/WorkoutMaster";
 function App() {
-    return (
-        <Router>
-            <Routes>
-            
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Home  />} />
-                <Route path="/goal-selection" element={<GoalSelection />} />
-                <Route path="/diet-selection" element={<DietSelection />} />
-                <Route path="/diet-preference" element={<DietPreference />} />
-                <Route path="/cooking-time" element={<CookingTimeSelection />} />
-                <Route path="/meal-plan-selection" element={<MealPlanSelection />} />
-                <Route path="/meal-plan" element={<MealPlan />} />
-                <Route path="/activity-level" element={<ActivityLevelSelection />} />
-                <Route path="/exercise-routine" element={<ExerciseRoutine />} />
-                <Route path="/pain-injury-form" element={<PainAndInjuryForm />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/bmi-calculator" element={<BMICalculator />} />
-                <Route path="/calender" element={<Calender />} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/goal-selection" element={<GoalSelection />} />
+        <Route path="/diet-selection" element={<DietSelection />} />
+        <Route path="/diet-preference" element={<DietPreference />} />
+        <Route path="/cooking-time" element={<CookingTimeSelection />} />
+        <Route path="/meal-plan-selection" element={<MealPlanSelection />} />
+        <Route path="/meal-plan" element={<MealPlan />} />
+        <Route path="/activity-level" element={<ActivityLevelSelection />} />
+        <Route path="/exercise-routine" element={<ExerciseRoutine />} />
+        <Route path="/pain-injury-form" element={<PainAndInjuryForm />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/bmi-calculator" element={<BMICalculator />} />
+        <Route path="/calender" element={<Calender />} />
+        <Route path="/meal-around-campus" element={<MealAroundCampus />} />
+        <Route path="/exercises-list" element={<ExercisesList />} />
+        <Route path="/exercises-master" element={<WorkoutMaster />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

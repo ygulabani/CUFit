@@ -12,6 +12,9 @@ urlpatterns = [
     path("dashboard/", lambda request: render(request, "landing/dashboard.html"), name="dashboard"),
     path("update-profile/", update_profile, name="update_profile"),
     path("get-profile/", get_user_profile, name="get_profile"),
+    path('meals/', views.get_meals, name='get_meals'),
+    path('exercises/', views.get_exercises, name='get_exercises'),
+    path('exercises-master/', views.get_master_workout, name='get_master_workout'),
 ]
 
 

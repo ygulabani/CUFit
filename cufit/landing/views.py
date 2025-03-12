@@ -280,3 +280,44 @@ def get_user_profile(request):
         return Response(data, status=200)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=404)
+
+
+
+# Static JSON Data for Meals Around Campus 
+meals_data = [
+    {"id": 1, "name": "Veg Burger", "location": "Cafeteria", "price": 50},
+    {"id": 2, "name": "Paneer Wrap", "location": "Food Court", "price": 80},
+    {"id": 3, "name": "Fruit Salad", "location": "Healthy Bites", "price": 60},
+]
+
+# Static JSON Data for Exercise Database 
+exercise_data = [
+    {"id": 1, "name": "Push-ups", "body_part": "Chest", "difficulty": "Easy"},
+    {"id": 2, "name": "Squats", "body_part": "Legs", "difficulty": "Medium"},
+    {"id": 3, "name": "Plank", "body_part": "Core", "difficulty": "Hard"},
+]
+
+# Static JSON Data for Master Workout Page 
+master_workout_data = [
+    {"id": 1, "name": "Push-ups", "instructions": "Keep back straight", "video_url": "https://youtu.be/zkU6Ok44_CI?si=fOrqYSwMxqdFPLml"},
+    {"id": 2, "name": "Squats", "instructions": "Keep knees behind toes", "video_url": "https://youtu.be/HFnSsLIB7a4?si=wYQlU0hMdu4nsszy"},
+    {"id": 3, "name": "Plank", "instructions": "Hold position for 30s", "video_url": "https://youtu.be/_lfR4sl0ZCE?si=nWV4TprthQ3d6egh"},
+]
+
+# GET API to fetch meals around campus
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_meals(request):
+    return Response({"meals": meals_data})
+
+# GET API to fetch exercise database
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_exercises(request):
+    return Response({"exercises": exercise_data})
+
+# GET API for master workout page
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_master_workout(request):
+    return Response({"workout_master": master_workout_data})
