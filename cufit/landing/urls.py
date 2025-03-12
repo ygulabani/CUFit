@@ -20,7 +20,6 @@ urlpatterns = [
     path("dashboard/", lambda request: render(request, "landing/dashboard.html"), name="dashboard"),
     path("update-profile/", update_profile, name="update_profile"),
     path("get-profile/", get_user_profile, name="get_profile"),
-    path('api/', include(router.urls)),
 ]
 
 

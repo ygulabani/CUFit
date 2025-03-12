@@ -284,9 +284,3 @@ def get_user_profile(request):
         return Response(data, status=200)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=404)
-
-
-class MealPlanViewSet(viewsets.ModelViewSet):
-    queryset = MealPlan.objects.all()
-    serializer_class = MealPlanSerializer
-    permission_classes = [AllowAny] 
