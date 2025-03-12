@@ -2,13 +2,14 @@
 from django.shortcuts import render
 from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile
 from . import views
-from rest_framework.routers import DefaultRouter  # Add this import
-from .views import MealPlanViewSet
-
+from rest_framework.routers import DefaultRouter
+from .views import MealPlanViewSet, UserMealPlanViewSet  
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
+router.register(r'usermealplans', UserMealPlanViewSet)
 
 urlpatterns = [
+    path('', include(router.urls)),
     path("login/", views.login_view, name="login"),
     path("signup/", views.signup_view, name="signup"),
     path("users/<int:id>", views.UserCRUD.as_view(), name="users"),
@@ -22,3 +23,4 @@ urlpatterns = [
     path('exercises-master/', views.get_master_workout, name='get_master_workout'),
     path('api/', include(router.urls)),
 ]
+

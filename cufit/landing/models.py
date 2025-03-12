@@ -50,3 +50,13 @@ class MealPlan(models.Model):
 
     def __str__(self):
         return f"{self.get_meal_type_display()} - {self.get_diet_type_display()}"
+
+class UserMealPlan(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField()
+    breakfast = models.ForeignKey(MealPlan, related_name='breakfast_meals', on_delete=models.SET_NULL, null=True, blank=True)
+    lunch = models.ForeignKey(MealPlan, related_name='lunch_meals', on_delete=models.SET_NULL, null=True, blank=True)
+    dinner = models.ForeignKey(MealPlan, related_name='dinner_meals', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"

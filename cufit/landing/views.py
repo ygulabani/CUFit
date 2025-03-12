@@ -323,11 +323,24 @@ def get_master_workout(request):
     return Response({"workout_master": master_workout_data})
 
 from rest_framework import viewsets
-from .models import MealPlan
-from .serializers import MealPlanSerializer
-from rest_framework.permissions import AllowAny 
+from .models import MealPlan, UserMealPlan
+from .serializers import MealPlanSerializer, UserMealPlanSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class MealPlanViewSet(viewsets.ModelViewSet):
     queryset = MealPlan.objects.all()
     serializer_class = MealPlanSerializer
     permission_classes = [AllowAny]
+
+
+
+class UserMealPlanViewSet(viewsets.ModelViewSet):
+    queryset = UserMealPlan.objects.all()
+    serializer_class = UserMealPlanSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserMealPlan.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

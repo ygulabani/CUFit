@@ -17,6 +17,8 @@ import Home from "./pages/Home";
 import MealAroundCampus from "./pages/MealAroundCampus";
 import ExercisesList from "./pages/ExercisesList";
 import WorkoutMaster from "./pages/WorkoutMaster";
+import UserMealPlan from "./pages/UserMealPlan";
+
 function App() {
   return (
     <Router>
@@ -39,6 +41,7 @@ function App() {
         <Route path="/meal-around-campus" element={<MealAroundCampus />} />
         <Route path="/exercises-list" element={<ExercisesList />} />
         <Route path="/exercises-master" element={<WorkoutMaster />} />
+        <Route path="/user-meal-plan" element={<UserMealPlan />} />
       </Routes>
     </Router>
   );

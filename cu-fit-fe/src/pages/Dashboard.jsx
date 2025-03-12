@@ -81,7 +81,13 @@ const Dashboard = () => {
                             className="bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 transition font-semibold"
                         >
                             Edit Preference
-                     </button>
+                    </button>
+                    <button
+                        onClick={() => navigate("/user-meal-plan")}
+                        className="bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 transition font-semibold"
+                    >
+                        Your Meal-plan
+                    </button>
                 </div>
             </div>
             <br></br>
