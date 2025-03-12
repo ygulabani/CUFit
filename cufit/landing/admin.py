@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Profile  # Import your model
+from .models import Profile, MealPlan
 
-# Register the Profile model
-admin.site.register(Profile)
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user',)  # Customize based on Profile fields
+
+@admin.register(MealPlan)
+class MealPlanAdmin(admin.ModelAdmin):
+    list_display = ('meal_id', 'meal_type', 'diet_type', 'cooking_time', 'diet_selected')
+    list_filter = ('diet_type', 'meal_type', 'diet_selected')

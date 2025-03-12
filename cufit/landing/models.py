@@ -23,3 +23,30 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Profile"
+
+class MealPlan(models.Model):
+    MEAL_TYPES = [
+        ('breakfast', 'Breakfast'),
+        ('lunch', 'Lunch'),
+        ('dinner', 'Dinner'),
+        ('snack', 'Snack'),
+    ]
+
+    DIET_TYPES = [
+        ('vegan', 'Vegan'),
+        ('vegetarian', 'Vegetarian'),
+        ('keto', 'Keto'),
+        ('paleo', 'Paleo'),
+        ('standard', 'Standard'),
+    ]
+
+    meal_id = models.AutoField(primary_key=True)  # Unique ID
+    diet_type = models.CharField(max_length=20, choices=DIET_TYPES)  # Type of Diet
+    meal_type = models.CharField(max_length=20, choices=MEAL_TYPES)  # Type of Meal
+    recipe_link = models.URLField(max_length=500, blank=True, null=True)  # Link to Recipe
+    instructions = models.TextField()  # Cooking Instructions
+    diet_selected = models.BooleanField(default=False)  # Whether the meal is selected in the plan
+    cooking_time = models.IntegerField(help_text="Cooking time in minutes")  # Cooking Time
+
+    def __str__(self):
+        return f"{self.get_meal_type_display()} - {self.get_diet_type_display()}"

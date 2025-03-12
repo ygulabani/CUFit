@@ -6,6 +6,10 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib.auth import get_user_model
+from rest_framework import viewsets
+from .models import MealPlan
+from .serializers import MealPlanSerializer
+from rest_framework.permissions import AllowAny
 
 from rest_framework.decorators import (
     api_view,
@@ -280,3 +284,9 @@ def get_user_profile(request):
         return Response(data, status=200)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=404)
+
+
+class MealPlanViewSet(viewsets.ModelViewSet):
+    queryset = MealPlan.objects.all()
+    serializer_class = MealPlanSerializer
+    permission_classes = [AllowAny] 
