@@ -60,7 +60,7 @@ const Login = () => {
             console.log("Login Success:", response.data);
             setErrorMessage("");
             localStorage.setItem("authToken", response.data.access_token);
-            navigate("/calender");
+            navigate("/dashboard");
         } catch (error) {
             console.error("Login Error:", error);
             setErrorMessage("Login failed. Please check your credentials.");
