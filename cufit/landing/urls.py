@@ -1,17 +1,14 @@
 ﻿from django.urls import path, include
 from django.shortcuts import render
-from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile, MealPlanViewSet
+from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile
 from . import views
-from rest_framework.routers import DefaultRouter
-from django.contrib import admin
-
+from rest_framework.routers import DefaultRouter  # Add this import
+from .views import MealPlanViewSet
 
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  
-    path('', include('landing.urls')),
     path("login/", views.login_view, name="login"),
     path("signup/", views.signup_view, name="signup"),
     path("users/<int:id>", views.UserCRUD.as_view(), name="users"),
@@ -20,7 +17,8 @@ urlpatterns = [
     path("dashboard/", lambda request: render(request, "landing/dashboard.html"), name="dashboard"),
     path("update-profile/", update_profile, name="update_profile"),
     path("get-profile/", get_user_profile, name="get_profile"),
+    path('meals/', views.get_meals, name='get_meals'),
+    path('exercises/', views.get_exercises, name='get_exercises'),
+    path('exercises-master/', views.get_master_workout, name='get_master_workout'),
+    path('api/', include(router.urls)),
 ]
-
-
-
