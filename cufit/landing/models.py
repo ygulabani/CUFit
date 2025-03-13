@@ -79,7 +79,7 @@ class Profile(models.Model):
 class MealPlan(models.Model):
     meal_id = models.AutoField(primary_key=True)  # Unique ID
     meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)  # Type of Meal
-    diet_selection = models.CharField(max_length=20, choices=DIET_SELECTION_CHOICES)  # Type of Diet
+    diet_selection = models.CharField(max_length=100, default='default_diet')
     diet_preference = models.CharField(max_length=20, choices=DIET_PREFERENCE_CHOICES, blank=True, null=True)  # ✅ NEW FIELD
     goal_selection = models.CharField(max_length=50, choices=GOAL_SELECTION_CHOICES, blank=True, null=True)
     cooking_time = models.CharField(max_length=10, choices=COOKING_TIME_CHOICES)  # Cooking Time
