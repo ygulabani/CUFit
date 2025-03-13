@@ -1,9 +1,12 @@
-﻿from django.urls import path, include
+﻿from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import path, include
 from django.shortcuts import render
 from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import MealPlanViewSet, UserMealPlanViewSet  
+from .views import MealPlanViewSet, UserMealPlanViewSet 
+from landing.views import update_exercise_routine
+
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
 router.register(r'usermealplans', UserMealPlanViewSet)
@@ -22,5 +25,9 @@ urlpatterns = [
     path('exercises/', views.get_exercises, name='get_exercises'),
     path('exercises-master/', views.get_master_workout, name='get_master_workout'),
     path('api/', include(router.urls)),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("update-exercise-routine/", update_exercise_routine, name="update_exercise_routine"),
+
 ]
 
