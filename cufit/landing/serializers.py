@@ -29,16 +29,17 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+from rest_framework import serializers
+from .models import MealPlan, UserMealPlan
+
 class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealPlan
-        fields = '__all__'
+        fields = 'all'
 
 class UserMealPlanSerializer(serializers.ModelSerializer):
-    breakfast = MealPlanSerializer()
-    lunch = MealPlanSerializer()
-    dinner = MealPlanSerializer()
+    meal_details = MealPlanSerializer(source='breakfast', read_only=True)
 
     class Meta:
         model = UserMealPlan
-        fields = '__all__'
+        fields = ['date', 'meal_details']

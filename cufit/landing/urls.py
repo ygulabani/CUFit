@@ -4,12 +4,14 @@ from django.shortcuts import render
 from .views import diet_preference_view, dashboard_view, update_profile, get_user_profile
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import MealPlanViewSet, UserMealPlanViewSet 
+from .views import MealPlanViewSet
 from landing.views import update_exercise_routine
+from .views import MatchMealPlanViewSet
+from .views import get_user_meal_plan
 
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
-router.register(r'usermealplans', UserMealPlanViewSet)
+router.register(r'match-meals', MatchMealPlanViewSet, basename='match-meals')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -28,6 +30,5 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("update-exercise-routine/", update_exercise_routine, name="update_exercise_routine"),
-
+    path('api/user-meal-plan/', get_user_meal_plan, name='user_meal_plan'),
 ]
-

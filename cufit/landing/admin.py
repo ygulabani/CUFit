@@ -7,5 +7,5 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(MealPlan)
 class MealPlanAdmin(admin.ModelAdmin):
-    list_display = ('meal_id', 'meal_type', 'diet_type', 'cooking_time', 'diet_selected')
-    list_filter = ('diet_type', 'meal_type', 'diet_selected')
+    list_display = ['meal_id', 'meal_type', 'diet_selection', 'goal_selection']
+    list_filter = ['diet_selection', 'goal_selection']
