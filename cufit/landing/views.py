@@ -16,6 +16,10 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from rest_framework import generics, permissions
+from .models import CookingTimePreference
+from .serializers import CookingTimePreferenceSerializer
+
 
 User = get_user_model()  # This ensures Django uses CustomUser
 
@@ -513,6 +517,16 @@ def user_meal_plan(request):
     ).values()
 
     return JsonResponse({"meals": list(meals)}, safe=False)
+
+
+
+class CookingTimePreferenceView(generics.CreateAPIView):
+    queryset = CookingTimePreference.objects.all()
+    serializer_class = CookingTimePreferenceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 #class UserMealPlanViewSet(viewsets.ModelViewSet):

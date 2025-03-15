@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser
 from .models import MealPlan, UserMealPlan
+from .models import CookingTimePreference
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -43,3 +44,10 @@ class UserMealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMealPlan
         fields = ['date', 'meal_details']
+
+       
+
+class CookingTimePreferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CookingTimePreference
+        fields = ['user', 'cooking_time']
