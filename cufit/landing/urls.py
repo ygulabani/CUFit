@@ -8,7 +8,6 @@ from .views import MealPlanViewSet
 from landing.views import update_exercise_routine
 from .views import MatchMealPlanViewSet
 from .views import get_user_meal_plan
-from .views import CookingTimePreferenceView
 
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
@@ -32,5 +31,4 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("update-exercise-routine/", update_exercise_routine, name="update_exercise_routine"),
     path('api/user-meal-plan/', get_user_meal_plan, name='user_meal_plan'),
-    path('cooking-time/', CookingTimePreferenceView.as_view(), name='cooking-time'),
 ]

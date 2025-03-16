@@ -1,7 +1,6 @@
 ﻿from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 
 # 🍳 Cooking Time Choices
 COOKING_TIME_CHOICES = [
@@ -108,10 +107,3 @@ class UserMealPlan(models.Model):
         return f"{self.user.username} - {self.date}"
     
 
-
-class CookingTimePreference(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cooking_time = models.IntegerField(help_text="Preferred cooking time in minutes")
-
-    def __str__(self):
-        return f"{self.user.username} - {self.cooking_time} mins"
