@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Profile
+from .models import Profile, Exercise, MasterWorkout, Meal
 from django.contrib.auth import get_user_model
 
 from rest_framework.decorators import (
@@ -15,6 +15,7 @@ from rest_framework.decorators import (
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
 
 
 
@@ -303,7 +304,7 @@ def update_profile(request):
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Profile
 
 @api_view(["POST"])
@@ -352,44 +353,46 @@ def get_user_profile(request):
 
 
 
-# Static JSON Data for Meals Around Campus 
-meals_data = [
-    {"id": 1, "name": "Veg Burger", "location": "Cafeteria", "price": 50},
-    {"id": 2, "name": "Paneer Wrap", "location": "Food Court", "price": 80},
-    {"id": 3, "name": "Fruit Salad", "location": "Healthy Bites", "price": 60},
-]
-
-# Static JSON Data for Exercise Database 
-exercise_data = [
-    {"id": 1, "name": "Push-ups", "body_part": "Chest", "difficulty": "Easy"},
-    {"id": 2, "name": "Squats", "body_part": "Legs", "difficulty": "Medium"},
-    {"id": 3, "name": "Plank", "body_part": "Core", "difficulty": "Hard"},
-]
-
-# Static JSON Data for Master Workout Page 
-master_workout_data = [
-    {"id": 1, "name": "Push-ups", "instructions": "Keep back straight", "video_url": "https://youtu.be/zkU6Ok44_CI?si=fOrqYSwMxqdFPLml"},
-    {"id": 2, "name": "Squats", "instructions": "Keep knees behind toes", "video_url": "https://youtu.be/HFnSsLIB7a4?si=wYQlU0hMdu4nsszy"},
-    {"id": 3, "name": "Plank", "instructions": "Hold position for 30s", "video_url": "https://youtu.be/_lfR4sl0ZCE?si=nWV4TprthQ3d6egh"},
-]
+from .serializers import MealSerializer, ExerciseSerializer, MasterWorkoutSerializer, MealPlanSerializer
 
 # GET API to fetch meals around campus
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])
+@permission_classes([IsAuthenticated])
 def get_meals(request):
-    return Response({"meals": meals_data})
+    meals = Meal.objects.all()
+    serializer = MealSerializer(meals, many=True)
+    return Response({"meals": serializer.data})
 
 # GET API to fetch exercise database
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])
+@permission_classes([IsAuthenticated])
 def get_exercises(request):
-    return Response({"exercises": exercise_data})
+    pain_and_injury = request.query_params.getlist('pain_and_injury', [])
+
+    if pain_and_injury:
+        restricted_exercises = get_restricted_exercises(pain_and_injury)
+        exercises = Exercise.objects.filter(name__in=restricted_exercises)
+    else:
+        exercises = Exercise.objects.all()
+
+    serializer = ExerciseSerializer(exercises, many=True)
+    return Response({"exercises": serializer.data})
 
 # GET API for master workout page
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])
+@permission_classes([IsAuthenticated])
 def get_master_workout(request):
-    return Response({"workout_master": master_workout_data})
+    pain_and_injury = request.query_params.getlist('pain_and_injury', [])
+
+    if pain_and_injury:
+        restricted_exercises = get_restricted_exercises(pain_and_injury)
+        workouts = MasterWorkout.objects.filter(name__in=restricted_exercises)
+    else:
+        workouts = MasterWorkout.objects.all()
+    
+    serializer = MasterWorkoutSerializer(workouts, many=True)
+    return Response({"workout_master": serializer.data})
+
 
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny

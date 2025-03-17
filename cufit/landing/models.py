@@ -106,4 +106,30 @@ class UserMealPlan(models.Model):
     def str(self):
         return f"{self.user.username} - {self.date}"
     
+    
+class Meal(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    price = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+    
+
+class Exercise(models.Model):
+    name = models.CharField(max_length=100)
+    body_part = models.CharField(max_length=100)
+    difficulty = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
+
+
+class MasterWorkout(models.Model):
+    name = models.CharField(max_length=100)
+    instructions = models.TextField()
+    video_url = models.URLField()
+
+    def __str__(self):
+        return self.name

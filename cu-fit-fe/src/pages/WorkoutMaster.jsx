@@ -5,11 +5,21 @@ export default function WorkoutMaster() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/exercises-master/");
+        const response = await fetch(
+          "http://127.0.0.1:8000/exercises-master/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch workouts");
         }

@@ -4,11 +4,18 @@ export default function MealAroundCampus() {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchMeals = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/meals/");
+        const response = await fetch("http://127.0.0.1:8000/meal/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch meals");
         }
