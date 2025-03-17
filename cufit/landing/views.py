@@ -517,16 +517,3 @@ def user_meal_plan(request):
 
 
 
-
-
-
-#class UserMealPlanViewSet(viewsets.ModelViewSet):
-#    queryset = UserMealPlan.objects.all()
- #   serializer_class = UserMealPlanSerializer
-  #  permission_classes = [IsAuthenticated]
-  #
-    #def get_queryset(self):
-     #   return UserMealPlan.objects.filter(user=self.request.user)
-
-   # def perform_create(self, serializer):
-    #    serializer.save(user=self.request.user)
