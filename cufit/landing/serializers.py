@@ -35,7 +35,7 @@ from .models import MealPlan, UserMealPlan
 class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealPlan
-        fields = 'all'
+        fields = '__all__'
 
 class UserMealPlanSerializer(serializers.ModelSerializer):
     meal_details = MealPlanSerializer(source='breakfast', read_only=True)
