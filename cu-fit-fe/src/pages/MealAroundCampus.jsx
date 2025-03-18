@@ -97,7 +97,14 @@ export default function MealAroundCampus() {
                   </svg>
                   <span>{meal.location}</span>
                 </div>
-                <button className="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600 transition-colors duration-200">
+                <button
+                  className="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600 transition-colors duration-200"
+                  onClick={() => {
+                    if (meal.url) {
+                      window.open(meal.url, "_blank");
+                    }
+                  }}
+                >
                   Get Directions
                 </button>
               </div>

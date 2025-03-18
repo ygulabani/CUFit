@@ -22,7 +22,7 @@ const CookingTimeSelection = () => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
-          cooking_time: selectedTime,
+          cooking_time_preference: selectedTime,
         }),
       });
       navigate("/meal-plan-selection");

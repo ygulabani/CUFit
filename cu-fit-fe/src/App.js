@@ -18,10 +18,11 @@ import MealAroundCampus from "./pages/MealAroundCampus";
 import ExercisesList from "./pages/ExercisesList";
 import WorkoutMaster from "./pages/WorkoutMaster";
 import UserMealPlan from "./pages/UserMealPlan";
-
+import { Toaster } from "react-hot-toast";
 function App() {
   return (
     <Router>
+      <Toaster />
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

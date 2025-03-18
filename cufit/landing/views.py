@@ -273,18 +273,19 @@ from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["POST"])
-
 @permission_classes([IsAuthenticated])
 def update_profile(request):
     user = request.user
     profile, created = Profile.objects.get_or_create(user=user)
 
+    profile.rest_days = request.data.get("rest_days", profile.rest_days)
+    profile.bmi = request.data.get("bmi", profile.bmi)
     profile.goal_selection = request.data.get("goal_selection", profile.goal_selection)
     profile.diet_selection = request.data.get("diet_selection", profile.diet_selection)
     profile.diet_preference = request.data.get(
         "diet_preference", profile.diet_preference
     )
-    profile.cooking_time = request.data.get("cooking_time", profile.cooking_time)
+    profile.cooking_time_preference = request.data.get("cooking_time_preference", profile.cooking_time_preference)
     profile.meal_plan_selection = request.data.get(
         "meal_plan_selection", profile.meal_plan_selection
     )
@@ -340,7 +341,7 @@ def get_user_profile(request):
             "goal_selection": profile.goal_selection or "Not selected",
             "diet_selection": profile.diet_selection or "Not selected",
             "diet_preference": profile.diet_preference or "Not selected",
-            "cooking_time": profile.cooking_time or "Not selected",
+            "cooking_time_preference": profile.cooking_time_preference or "Not selected",
             "meal_plan_selection": profile.meal_plan_selection or "Not selected",
             "meal_plan": profile.meal_plan or "Not selected",
             "activity_level": profile.activity_level or "Not selected",

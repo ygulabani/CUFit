@@ -62,7 +62,8 @@ class CustomUser(AbstractUser):
         return self.username
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
+    rest_days = models.TextField(blank=True, null=True)
+    bmi = models.TextField(blank=True, null=True)
     goal_selection = models.CharField(max_length=50, choices=GOAL_SELECTION_CHOICES, blank=True, null=True)
     diet_selection = models.CharField(max_length=50, choices=DIET_SELECTION_CHOICES, blank=True, null=True)
     diet_preference = models.CharField(max_length=50, choices=DIET_PREFERENCE_CHOICES, blank=True, null=True)
@@ -111,6 +112,7 @@ class Meal(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     price = models.IntegerField()
+    url = models.URLField(max_length=500, blank=True, null=True)
 
     def __str__(self):
         return self.name

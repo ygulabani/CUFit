@@ -3,6 +3,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -45,20 +47,23 @@ const CalendarPage = () => {
 
   const handleConfirm = async () => {
     try {
-      // TODO: Replace with your actual API endpoint
-      // const response = await fetch('/api/save-rest-days', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ restDays: selectedDates }),
-      // });
-      
-      alert('Rest days saved successfully!');
-      navigate('/bmi-calculator');
+      const response = await fetch("http://localhost:8000/update-profile/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ rest_days: selectedDates.join(",") }),
+      });
+      if (response.ok) {
+        toast.success("Rest days saved successfully!");
+        navigate("/bmi-calculator");
+      } else {
+        toast.error("Failed to save rest days. Please try again.");
+      }
     } catch (error) {
-      console.error('Error saving rest days:', error);
-      alert('Failed to save rest days. Please try again.');
+      toast.error("Failed to save rest days. Please try again.");
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -81,10 +86,10 @@ const CalendarPage = () => {
         <ul>
           {selectedDates.map((date, index) => (
             <li key={index}>
-              {date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
+              {date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
               })}
             </li>
           ))}
@@ -180,15 +185,18 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
-  
-  ${props => props.isReset ? `
+
+  ${(props) =>
+    props.isReset
+      ? `
     background-color: #e74c3c;
     color: white;
     
     &:hover {
       background-color: #c0392b;
     }
-  ` : `
+  `
+      : `
     background-color: #16a34a;
     color: white;
     
