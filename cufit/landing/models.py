@@ -122,6 +122,7 @@ class Exercise(models.Model):
     name = models.CharField(max_length=100)
     body_part = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, blank=True, null=True)  
 
     def __str__(self):
         return self.name
