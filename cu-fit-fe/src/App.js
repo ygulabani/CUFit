@@ -19,6 +19,7 @@ import ExercisesList from "./pages/ExercisesList";
 import WorkoutMaster from "./pages/WorkoutMaster";
 import UserMealPlan from "./pages/UserMealPlan";
 import { Toaster } from "react-hot-toast";
+import WorkoutEquipment from "./pages/WorkoutEquipment";
 function App() {
   return (
     <Router>
@@ -43,6 +44,7 @@ function App() {
         <Route path="/exercises-list" element={<ExercisesList />} />
         <Route path="/exercises-master" element={<WorkoutMaster />} />
         <Route path="/user-meal-plan" element={<UserMealPlan />} />
+        <Route path="/workout-equipment" element={<WorkoutEquipment />} /> 
       </Routes>
     </Router>
   );

@@ -65,6 +65,12 @@ const Header = () => {
          >
            Exercise Routine
          </Link>
+         <Link
+           to="/workout-equipment"
+           className={`hover:text-green-100 transition-colors ${isActive("/workout-equipment")}`}
+          >
+           Workout Equipment
+         </Link>
 
 
         </nav> */}
