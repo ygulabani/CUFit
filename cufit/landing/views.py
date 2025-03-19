@@ -520,4 +520,27 @@ def user_meal_plan(request):
     return JsonResponse({"meals": list(meals)}, safe=False)
 
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+from .models import Equipment
+
+User = get_user_model()
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])  # Ensure the user is logged in
+def save_equipment(request):
+    try:
+        user = request.user  # Get the logged-in user
+        selected_equipment = request.data.get("equipment", [])  # Get selected equipment
+
+        # Save each equipment item to the database
+        for item in selected_equipment:
+            Equipment.objects.create(user=user, equipment_name=item)
+
+        return Response({"message": "Equipment saved successfully!"}, status=201)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
 

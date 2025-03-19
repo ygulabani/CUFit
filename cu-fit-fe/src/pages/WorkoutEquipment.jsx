@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const equipmentOptions = [
   { id: "dumbbells", name: "🏋️ Dumbbells" },
@@ -26,6 +27,35 @@ const WorkoutEquipment = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem("token");  // Fetch token from localStorage
+  
+      if (!token) {
+        alert("You're not logged in! Please log in first.");
+        return;
+      }
+  
+      const response = await axios.post(
+        "http://127.0.0.1:8000/save-equipment/",
+        { equipment: selectedEquipment },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Send token in the request
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      console.log("Data saved successfully:", response.data);
+      navigate("/exercise-routine"); // Move to next page
+  
+    } catch (error) {
+      console.error("Error saving equipment:", error.response?.data || error);
+      alert("Error: " + (error.response?.data?.error || "Something went wrong!"));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -33,9 +63,7 @@ const WorkoutEquipment = () => {
           <h1 className="text-3xl font-bold text-green-600">
             Select Your Available Workout Equipment
           </h1>
-          <p className="text-gray-600">
-            Choose all the equipment you have at home.
-          </p>
+          <p className="text-gray-600">Choose all the equipment you have at home.</p>
         </div>
 
         {/* Equipment Selection */}
@@ -49,8 +77,7 @@ const WorkoutEquipment = () => {
                   selectedEquipment.includes(equipment.id)
                     ? "border-green-500 bg-green-50"
                     : "border-gray-200 bg-white hover:border-green-300"
-                }
-              `}
+                }`}
             >
               <span className="text-2xl">{equipment.name.split(" ")[0]}</span>
               <h3 className="text-lg font-semibold text-gray-900">
@@ -63,13 +90,13 @@ const WorkoutEquipment = () => {
         {/* Navigation Buttons */}
         <div className="mt-8 flex justify-between">
           <button
-            onClick={() => navigate("/previous-page")} // Replace with actual previous route
+            onClick={() => navigate("/previous-page")}
             className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-500 transition-colors duration-200"
           >
             Back
           </button>
           <button
-            onClick={() => navigate("/exercise-routine")} // Replace with actual next route
+            onClick={handleSubmit}
             className={`px-8 py-3 rounded-lg font-semibold transition-colors duration-200 ${
               selectedEquipment.length > 0
                 ? "bg-green-500 text-white hover:bg-green-600"

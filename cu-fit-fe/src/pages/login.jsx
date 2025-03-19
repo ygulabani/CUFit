@@ -49,18 +49,27 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!validateInputs()) {
             setErrorMessage("Please fix the errors before submitting.");
             return;
         }
-
+    
         try {
             const response = await axios.post(`${API_BASE_URL}/login/`, formData);
-            console.log("Login Success:", response.data);
-            setErrorMessage("");
-            localStorage.setItem("authToken", response.data.access_token);
-            navigate("/dashboard");
+    
+            if (response.data.access_token) {
+                console.log("Login Success:", response.data);
+                setErrorMessage("");
+    
+                // Store the token in localStorage (VERY IMPORTANT)
+                localStorage.setItem("token", response.data.access_token);
+    
+                // Navigate to the dashboard after login
+                navigate("/dashboard");
+            } else {
+                setErrorMessage("Login failed. No token received.");
+            }
         } catch (error) {
             console.error("Login Error:", error);
             setErrorMessage("Login failed. Please check your credentials.");

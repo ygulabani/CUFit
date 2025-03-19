@@ -136,3 +136,16 @@ class MasterWorkout(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # This gets your custom user model from "landing_customuser"
+
+class Equipment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to user
+    equipment_name = models.CharField(max_length=255)  # Store equipment name
+
+    def __str__(self):
+        return f"{self.user.username} - {self.equipment_name}"
