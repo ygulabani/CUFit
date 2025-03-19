@@ -1,4 +1,4 @@
-﻿import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+﻿import { Routes, Route, useLocation } from "react-router-dom";  // ❌ Remove Router from here
 import GoalSelection from "./pages/GoalSelection";
 import DietSelection from "./pages/DietSelection";
 import DietPreference from "./pages/DietPreference";
@@ -20,9 +20,13 @@ import WorkoutMaster from "./pages/WorkoutMaster";
 import UserMealPlan from "./pages/UserMealPlan";
 import { Toaster } from "react-hot-toast";
 import WorkoutEquipment from "./pages/WorkoutEquipment";
+import ChatButton from "./components/ChatButton";  
+
 function App() {
+  const location = useLocation();  
+
   return (
-    <Router>
+    <div className="min-h-screen bg-gray-50">
       <Toaster />
       <Routes>
         <Route path="/signup" element={<Signup />} />
@@ -44,9 +48,12 @@ function App() {
         <Route path="/exercises-list" element={<ExercisesList />} />
         <Route path="/exercises-master" element={<WorkoutMaster />} />
         <Route path="/user-meal-plan" element={<UserMealPlan />} />
-        <Route path="/workout-equipment" element={<WorkoutEquipment />} /> 
+        <Route path="/workout-equipment" element={<WorkoutEquipment />} />
       </Routes>
-    </Router>
+
+      {/* ✅ ChatButton will NOT appear on the login page */}
+      {location.pathname !== "/login" && <ChatButton />}
+    </div>
   );
 }
 
