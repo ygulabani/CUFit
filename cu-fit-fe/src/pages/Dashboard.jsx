@@ -5,7 +5,7 @@ const Dashboard = () => {
 
     // Logout function
     const handleLogout = () => {
-        localStorage.removeItem("authToken"); // Remove authentication token
+        localStorage.removeItem("token"); // Remove authentication token
         navigate("/login"); // Redirect to login page
     };
 

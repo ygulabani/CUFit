@@ -5,7 +5,7 @@ export default function WorkoutMaster() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchWorkouts = async () => {

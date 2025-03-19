@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import CustomUser
-from .models import MealPlan, UserMealPlan, Meal, Exercise, MasterWorkout
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -28,31 +27,3 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-class MealPlanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MealPlan
-        fields = '__all__'
-
-class UserMealPlanSerializer(serializers.ModelSerializer):
-    meal_details = MealPlanSerializer(source='breakfast', read_only=True)
-
-    class Meta:
-        model = UserMealPlan
-        fields = ['date', 'meal_details']
-
-class MealSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Meal
-        fields = '__all__'
-
-class ExerciseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Exercise
-        fields = '__all__'
-
-class MasterWorkoutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MasterWorkout
-        fields = '__all__'
-

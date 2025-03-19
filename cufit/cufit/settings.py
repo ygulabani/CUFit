@@ -19,7 +19,7 @@ APPEND_SLASH = False
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-AUTH_USER_MODEL = "landing.CustomUser"
+AUTH_USER_MODEL = "users.CustomUser"
 
 
 INSTALLED_APPS = [
@@ -31,7 +31,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "users",
     "landing",
+    "meals",
+    "workout",
     "corsheaders",
 ]
 
@@ -95,4 +98,4 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "landing/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-AUTH_USER_MODEL = "landing.CustomUser"
+AUTH_USER_MODEL = "users.CustomUser"

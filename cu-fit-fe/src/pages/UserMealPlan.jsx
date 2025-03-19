@@ -10,7 +10,7 @@ const UserMealPlan = () => {
 
     useEffect(() => {
         const fetchMealPlans = async () => {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("token");
             if (!token) {
                 setError("User not authenticated. Please log in.");
                 setLoading(false);
