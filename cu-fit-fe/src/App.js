@@ -52,7 +52,9 @@ function App() {
       </Routes>
 
       {/* ✅ ChatButton will NOT appear on the login page */}
-      {location.pathname !== "/login" && <ChatButton />}
+      {location.pathname !== "/login" &&
+       location.pathname !== "/" &&
+       location.pathname !== "/signup" && <ChatButton />}
     </div>
   );
 }
