@@ -9,7 +9,7 @@ export default function MealAroundCampus() {
   useEffect(() => {
     const fetchMeals = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/meal/", {
+        const response = await fetch("http://127.0.0.1:8000/meals/meal/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

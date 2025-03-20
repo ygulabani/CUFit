@@ -2,13 +2,13 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .models import MealPlan, UserMealPlan
+from .models import MealPlan, UserMealPlan, Meal
 from users.models import Profile
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import MealPlanSerializer, UserMealPlanSerializer
+from .serializers import MealPlanSerializer, UserMealPlanSerializer, MealSerializer
 from django.db.models import Q
 import random
 
@@ -153,6 +153,13 @@ def get_user_meal_plan(request):
             {'error': str(e)},
             status=500
         )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_meals(request):
+    meals = Meal.objects.all()
+    serializer = MealSerializer(meals, many=True)
+    return Response({"meals": serializer.data})
 
 from rest_framework import viewsets
 from .models import MealPlan
