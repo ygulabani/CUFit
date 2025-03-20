@@ -47,6 +47,7 @@ MEAL_TYPE_CHOICES = [
 # Create your models here.
 class MealPlan(models.Model):
     meal_id = models.AutoField(primary_key=True)  # Unique ID
+    name = models.CharField(max_length=100, null=True, blank=True)  # Name of the meal
     meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)  # Type of Meal
     diet_selection = models.CharField(max_length=100, default='default_diet')
     diet_preference = models.CharField(max_length=20, choices=DIET_PREFERENCE_CHOICES, blank=True, null=True)  # ✅ NEW FIELD

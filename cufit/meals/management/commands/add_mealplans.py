@@ -7,6 +7,39 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         meal_types = ['breakfast', 'lunch', 'dinner', 'snacks']
+        
+        # Dictionary of meal names for each meal type
+        meal_names = {
+            'breakfast': [
+                "Oatmeal with Berries", "Scrambled Eggs with Toast", 
+                "Greek Yogurt Parfait", "Breakfast Burrito",
+                "Pancakes with Maple Syrup", "Avocado Toast with Eggs",
+                "Smoothie Bowl", "Breakfast Sandwich",
+                "French Toast", "Overnight Oats"
+            ],
+            'lunch': [
+                "Grilled Chicken Salad", "Turkey Club Sandwich",
+                "Quinoa Buddha Bowl", "Tuna Wrap",
+                "Vegetable Stir Fry", "Mediterranean Pasta",
+                "Black Bean Burrito", "Poke Bowl",
+                "Chicken Caesar Wrap", "Veggie Burger"
+            ],
+            'dinner': [
+                "Grilled Salmon", "Chicken Breast with Vegetables",
+                "Beef Stir Fry", "Vegetable Curry",
+                "Pasta Primavera", "Baked Chicken",
+                "Fish Tacos", "Tofu Stir Fry",
+                "Shrimp Scampi", "Eggplant Parmesan"
+            ],
+            'snacks': [
+                "Mixed Nuts", "Greek Yogurt",
+                "Apple with Peanut Butter", "Protein Bar",
+                "Hummus with Carrots", "Trail Mix",
+                "Protein Smoothie", "Rice Cakes",
+                "Fruit Salad", "Granola Bar"
+            ]
+        }
+
         diet_selections = ['no-diet', 'keto', 'fasting', 'gluten-free', 'raw-food', 'bulking']
         diet_preferences = ['veg', 'non-veg', 'eggitarian', 'mediterranean', 'vegan', 'detox']
         cooking_times = [
@@ -47,12 +80,14 @@ class Command(BaseCommand):
                             # Create multiple entries for each combination with different goals
                             for goal in goal_selections:
                                 try:
+                                    meal_name = random.choice(meal_names[meal_type])
                                     meal_plan = MealPlan(
                                         meal_type=meal_type,
+                                        name=meal_name,  # Add the meal name
                                         diet_selection=diet_selection,
                                         diet_preference=diet_preference,
                                         cooking_time=cooking_time,
-                                        goal_selection=f"['{goal}']",  # Adding brackets without quotes
+                                        goal_selection=f"['{goal}']",
                                         calories=random.randint(200, 800),
                                         protein=round(random.uniform(10, 40), 1),
                                         carbs=round(random.uniform(20, 80), 1),

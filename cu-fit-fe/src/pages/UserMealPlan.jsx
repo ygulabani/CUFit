@@ -39,7 +39,7 @@ const UserMealPlan = () => {
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
         </div>
     );
 
@@ -47,10 +47,10 @@ const UserMealPlan = () => {
         <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-lg">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-900">Your Personalized Meal Plan</h2>
+                    <h2 className="text-2xl font-semibold text-green-600">Your Personalized Meal Plan</h2>
                     <button
                         onClick={() => navigate("/dashboard")}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
                     >
                         Back to Dashboard
                     </button>
@@ -61,7 +61,7 @@ const UserMealPlan = () => {
                         <p>{error}</p>
                         <button
                             onClick={fetchMealPlan}
-                            className="bg-red-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-red-600 transition"
+                            className="bg-green-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-green-600 transition"
                         >
                             Retry
                         </button>
@@ -81,36 +81,36 @@ const UserMealPlan = () => {
 
 const MealSection = ({ title, meals }) => (
     <div className="bg-gray-50 rounded-lg p-4">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
+        <h3 className="text-xl font-semibold text-green-600 mb-4">{title}</h3>
         {meals?.length ? (
             <div className="grid gap-4">
                 {meals.map((meal) => (
-                    <div key={meal.meal_id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <div key={meal.meal_id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:border-green-300 transition-colors">
                         <div className="flex justify-between items-start">
                             <div>
                                 <h4 className="text-lg font-medium text-gray-900">
-                                    {meal.get_meal_type_display || title}
+                                    {meal.name}
                                 </h4>
                                 <p className="text-sm text-gray-600 mt-1">{meal.instructions}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm font-medium text-blue-600">{meal.calories} calories</p>
+                                <p className="text-sm font-medium text-green-600">{meal.calories} calories</p>
                                 <p className="text-xs text-gray-500">
-                                    {meal.get_cooking_time_display || meal.cooking_time}
+                                    {meal.cooking_time}
                                 </p>
                             </div>
                         </div>
                         <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
                             <div className="text-center">
-                                <span className="font-medium">Protein</span>
+                                <span className="font-medium text-green-600">Protein</span>
                                 <p className="text-gray-600">{meal.protein}g</p>
                             </div>
                             <div className="text-center">
-                                <span className="font-medium">Carbs</span>
+                                <span className="font-medium text-green-600">Carbs</span>
                                 <p className="text-gray-600">{meal.carbs}g</p>
                             </div>
                             <div className="text-center">
-                                <span className="font-medium">Fat</span>
+                                <span className="font-medium text-green-600">Fat</span>
                                 <p className="text-gray-600">{meal.fat}g</p>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ const MealSection = ({ title, meals }) => (
                                     href={meal.recipe_link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-blue-500 hover:text-blue-600 text-sm"
+                                    className="text-green-500 hover:text-green-600 text-sm"
                                 >
                                     View Recipe →
                                 </a>

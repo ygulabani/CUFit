@@ -118,6 +118,7 @@ def get_user_meal_plan(request):
                 meal_type=meal_type
             ).values(
                 'meal_id',
+                'name',
                 'meal_type',
                 'diet_preference',
                 'goal_selection',
@@ -154,12 +155,14 @@ def get_user_meal_plan(request):
             status=500
         )
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_meals(request):
     meals = Meal.objects.all()
     serializer = MealSerializer(meals, many=True)
     return Response({"meals": serializer.data})
+
 
 from rest_framework import viewsets
 from .models import MealPlan
