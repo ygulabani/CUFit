@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import Profile
+from users.models import Profile
 
 from rest_framework.decorators import (
     api_view,
@@ -11,7 +11,7 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
-from .serializers import UserSerializer
+from users.serializers import UserSerializer
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -166,3 +166,4 @@ def get_user_profile(request):
         return Response(data, status=200)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=404)
+    

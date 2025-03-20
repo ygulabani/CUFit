@@ -8,4 +8,5 @@ urlpatterns = [
     path("diet-preferences/", diet_preference_view, name="diet_preferences"),
     path("dashboard/", dashboard_view, name="dashboard"),
     path("dashboard/", lambda request: render(request, "landing/dashboard.html"), name="dashboard"),
+    
 ]

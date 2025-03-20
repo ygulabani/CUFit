@@ -1,7 +1,8 @@
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.urls import path
-from .views import update_profile, get_user_profile
-from . import views
+from users.views import update_profile, get_user_profile
+from users import views
+from users.views import cufit_chatbot
 
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("get-profile/", get_user_profile, name="get_profile"),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("chatbot/", cufit_chatbot, name="chatbot"),
 ]
