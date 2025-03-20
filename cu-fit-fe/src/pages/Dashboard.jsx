@@ -18,8 +18,29 @@ const Dashboard = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+
+                if (profileResponse.status === 404) {
+                    // If profile doesn't exist, redirect to calendar page
+                    navigate("/calender");
+                    return;
+                }
+
                 if (!profileResponse.ok) throw new Error("Failed to fetch profile");
                 const profileData = await profileResponse.json();
+
+                // Set default values for missing data
+                const defaultData = {
+                    diet_selection: "Not set",
+                    activity_level: "Not set",
+                    diet_preference: "Not set",
+                    cooking_time_preference: "Not set",
+                    goal_selection: "Not set",
+                    exercise_routine: "No exercise routine set",
+                    bmi: "Not set",
+                };
+
+                // Merge profile data with defaults
+                const completeProfileData = { ...defaultData, ...profileData };
 
                 // Fetch meal plan
                 const mealPlanResponse = await fetch("http://127.0.0.1:8000/meals/api/user-meal-plan/", {
@@ -27,20 +48,33 @@ const Dashboard = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!mealPlanResponse.ok) throw new Error("Failed to fetch meal plan");
-                const mealPlanData = await mealPlanResponse.json();
 
-                setUserData(profileData);
+                let mealPlanData = {
+                    breakfast: [],
+                    lunch: [],
+                    dinner: [],
+                    snacks: []
+                };
+
+                if (mealPlanResponse.ok) {
+                    mealPlanData = await mealPlanResponse.json();
+                }
+
+                setUserData(completeProfileData);
                 setMealPlan(mealPlanData);
             } catch (err) {
-                setError(err.message);
+                if (err.message === "Failed to fetch profile") {
+                    navigate("/calender");
+                } else {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchUserData();
-    }, [token]);
+    }, [token, navigate]);
 
     // Logout function
     const handleLogout = () => {
