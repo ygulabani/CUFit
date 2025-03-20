@@ -1,17 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
-from .views import MealPlanViewSet
-from .views import MatchMealPlanViewSet
-from .views import get_user_meal_plan
+from .views import MealPlanViewSet, get_user_meal_plan
 
+# Initialize the router
 router = DefaultRouter()
 router.register(r'meals', MealPlanViewSet)
-router.register(r'match-meals', MatchMealPlanViewSet, basename='match-meals')
 
+# Define URL patterns
 urlpatterns = [
-    path('', include(router.urls)),
-    path('meal/', views.get_meals, name='get_meals'),
-    path('api/', include(router.urls)),
-    path('api/user-meal-plan/', get_user_meal_plan, name='user_meal_plan'),
+    path('', include(router.urls)),  # Includes all router-based views
+    path('api/user-meal-plan/', get_user_meal_plan, name='user_meal_plan'),  # Fetch user's meal plan
 ]
