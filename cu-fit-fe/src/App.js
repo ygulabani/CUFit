@@ -18,6 +18,7 @@ import MealAroundCampus from "./pages/MealAroundCampus";
 import ExercisesList from "./pages/ExercisesList";
 import WorkoutMaster from "./pages/WorkoutMaster";
 import UserMealPlan from "./pages/UserMealPlan";
+import UserWorkout from "./pages/UserWorkout";
 import { Toaster } from "react-hot-toast";
 import WorkoutEquipment from "./pages/WorkoutEquipment";
 import ChatButton from "./components/ChatButton";  
@@ -49,6 +50,7 @@ function App() {
         <Route path="/exercises-master" element={<WorkoutMaster />} />
         <Route path="/user-meal-plan" element={<UserMealPlan />} />
         <Route path="/workout-equipment" element={<WorkoutEquipment />} />
+        <Route path="/user-workout" element={<UserWorkout />} />
       </Routes>
 
       {/* ✅ ChatButton will NOT appear on the login page */}

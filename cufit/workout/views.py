@@ -1,4 +1,4 @@
-from .models import Exercise, MasterWorkout, Equipment
+from .models import Exercise, MasterWorkout, Equipment, WorkoutExercise
 from users.models import Profile
 from .serializers import ExerciseSerializer, MasterWorkoutSerializer
 
@@ -75,7 +75,7 @@ def get_exercises(request):
 # GET API for master workout page
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_master_workout(request):
+def get_master_workouts(request):
     pain_and_injury = request.query_params.getlist('pain_and_injury', [])
 
     if pain_and_injury:
@@ -126,4 +126,80 @@ def save_equipment(request):
     
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_workout(request):
+    try:
+        # Get user's profile
+        user_profile = Profile.objects.get(user=request.user)
+        activity_level = user_profile.activity_level.lower()
+
+        # Determine difficulty based on activity level
+        if activity_level in ['sedentary', 'light']:
+            difficulty = 'Beginner'
+        elif activity_level in ['moderate', 'very']:
+            difficulty = 'Intermediate'
+        else:  # extra or athlete
+            difficulty = 'Advanced'
+
+        # Get exercises based on difficulty
+        warm_up = WorkoutExercise.objects.filter(
+            difficulty=difficulty,
+            exercise_type='Warm Up'
+        ).values(
+            'exercise_id',
+            'name',
+            'description',
+            'duration',
+            'difficulty',
+            'sets',
+            'reps',
+            'video_link'
+        )
+
+        main_exercises = WorkoutExercise.objects.filter(
+            difficulty=difficulty,
+            exercise_type='Main Exercise'
+        ).values(
+            'exercise_id',
+            'name',
+            'description',
+            'duration',
+            'difficulty',
+            'sets',
+            'reps',
+            'video_link'
+        )
+
+        cool_down = WorkoutExercise.objects.filter(
+            difficulty=difficulty,
+            exercise_type='Cool Down'
+        ).values(
+            'exercise_id',
+            'name',
+            'description',
+            'duration',
+            'difficulty',
+            'sets',
+            'reps',
+            'video_link'
+        )
+
+        return Response({
+            'warm_up': list(warm_up),
+            'main_exercises': list(main_exercises),
+            'cool_down': list(cool_down)
+        })
+
+    except Profile.DoesNotExist:
+        return Response(
+            {'error': 'User profile not found. Please complete your profile first.'},
+            status=404
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=500
+        )
 

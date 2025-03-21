@@ -37,7 +37,7 @@ const WorkoutEquipment = () => {
       }
   
       const response = await axios.post(
-        "http://127.0.0.1:8000/save-equipment/",
+        "http://127.0.0.1:8000/workout/api/save-equipment/",
         { equipment: selectedEquipment },
         {
           headers: {

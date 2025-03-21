@@ -5,6 +5,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [mealPlan, setMealPlan] = useState(null);
+    const [workoutPlan, setWorkoutPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const token = localStorage.getItem("token");
@@ -58,6 +59,18 @@ const Dashboard = () => {
 
                 if (mealPlanResponse.ok) {
                     mealPlanData = await mealPlanResponse.json();
+                }
+
+                // Fetch workout plan
+                const workoutResponse = await fetch("http://127.0.0.1:8000/workout/api/user-workout/", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (workoutResponse.ok) {
+                    const workoutData = await workoutResponse.json();
+                    setWorkoutPlan(workoutData);
                 }
 
                 setUserData(completeProfileData);
@@ -126,6 +139,12 @@ const Dashboard = () => {
                         className="bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 transition font-semibold"
                     >
                         Master Workout
+                    </button>
+                    <button
+                        onClick={() => navigate("/user-workout")}
+                        className="bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 transition font-semibold"
+                    >
+                        My Workout Plan
                     </button>
                     <button
                         onClick={() => navigate("/calender")}
@@ -218,11 +237,49 @@ const Dashboard = () => {
                             Exercise Routine
                         </h2>
                         <div className="divide-y divide-gray-100">
-                            {userData.exercise_routine ? (
-                                <div className="py-3">
-                                    <div className="text-sm text-gray-600">
-                                        {userData.exercise_routine}
-                                    </div>
+                            {workoutPlan ? (
+                                <div className="space-y-6">
+                                    {/* Warm Up Section */}
+                                    {workoutPlan.warm_up && workoutPlan.warm_up.length > 0 && (
+                                        <div className="py-3">
+                                            <h3 className="font-medium text-gray-900 mb-2">Warm Up</h3>
+                                            <div className="space-y-2">
+                                                {workoutPlan.warm_up.map((exercise, index) => (
+                                                    <div key={index} className="text-sm text-gray-600">
+                                                        • {exercise.name} - {exercise.sets} sets × {exercise.reps} reps
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Main Exercises Section */}
+                                    {workoutPlan.main_exercises && workoutPlan.main_exercises.length > 0 && (
+                                        <div className="py-3">
+                                            <h3 className="font-medium text-gray-900 mb-2">Main Exercises</h3>
+                                            <div className="space-y-2">
+                                                {workoutPlan.main_exercises.map((exercise, index) => (
+                                                    <div key={index} className="text-sm text-gray-600">
+                                                        • {exercise.name} - {exercise.sets} sets × {exercise.reps} reps
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Cool Down Section */}
+                                    {workoutPlan.cool_down && workoutPlan.cool_down.length > 0 && (
+                                        <div className="py-3">
+                                            <h3 className="font-medium text-gray-900 mb-2">Cool Down</h3>
+                                            <div className="space-y-2">
+                                                {workoutPlan.cool_down.map((exercise, index) => (
+                                                    <div key={index} className="text-sm text-gray-600">
+                                                        • {exercise.name} - {exercise.duration} minutes
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="py-3 text-gray-500">
@@ -243,6 +300,30 @@ const Dashboard = () => {
                             {userData.bmi || "Not set"}
                         </p>
                     </div>
+                </div>
+
+                {/* Meal Plan Card */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-green-600 mb-4">Your Meal Plan</h3>
+                    <p className="text-gray-600 mb-4">View your personalized meal plan based on your preferences.</p>
+                    <button
+                        onClick={() => navigate("/meal-plan")}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                    >
+                        View Meal Plan
+                    </button>
+                </div>
+
+                {/* Workout Plan Card */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-green-600 mb-4">Your Workout Plan</h3>
+                    <p className="text-gray-600 mb-4">Get personalized workouts based on your activity level.</p>
+                    <button
+                        onClick={() => navigate("/workout")}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                    >
+                        View Workout Plan
+                    </button>
                 </div>
             </div>
         </div>

@@ -162,6 +162,7 @@ def get_user_profile(request):
             "activity_level": profile.activity_level or "Not selected",
             "exercise_routine": profile.exercise_routine or "Not selected",
             "pain_and_injury": profile.pain_and_injury or "Not selected",
+            "bmi": profile.bmi or "Not selected",
         }
         return Response(data, status=200)
     except Profile.DoesNotExist:

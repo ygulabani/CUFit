@@ -8,7 +8,7 @@ export default function ExercisesList() {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/exercises/", {
+        const response = await fetch("http://127.0.0.1:8000/workout/api/exercises/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
