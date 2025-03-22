@@ -8,6 +8,7 @@ const Dashboard = () => {
     const [workoutPlan, setWorkoutPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedExercise, setSelectedExercise] = useState(null);
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -302,29 +303,113 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Meal Plan Card */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-xl font-semibold text-green-600 mb-4">Your Meal Plan</h3>
-                    <p className="text-gray-600 mb-4">View your personalized meal plan based on your preferences.</p>
-                    <button
-                        onClick={() => navigate("/meal-plan")}
-                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                    >
-                        View Meal Plan
-                    </button>
+                {/* Daily Stretching Exercises */}
+                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            Daily Stretching Exercises
+                        </h2>
+                        <span className="text-2xl">🧘‍♂️</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            {
+                                name: "Desk Neck Stretch",
+                                duration: "20 seconds each side",
+                                description: "Gently tilt your head towards each shoulder while sitting",
+                                icon: "🪑",
+                                videoId: "lf6eu8c8LL8"
+                            },
+                            {
+                                name: "Seated Spinal Twist",
+                                duration: "15 seconds each side",
+                                description: "Twist your torso gently while seated, holding the chair for support",
+                                icon: "🔄",
+                                videoId: "6URMDkf2Uxk"
+                            },
+                            {
+                                name: "Wrist & Finger Stretch",
+                                duration: "30 seconds",
+                                description: "Stretch your wrists and fingers to prevent typing strain",
+                                icon: "✋",
+                                videoId: "uPO-zST-7EE"
+                            },
+                            {
+                                name: "Chair Shoulder Rolls",
+                                duration: "30 seconds",
+                                description: "Roll your shoulders backward and forward while seated",
+                                icon: "💺",
+                                videoId: "XbzY45Z5DE8"
+                            },
+                            {
+                                name: "Seated Leg Extensions",
+                                duration: "10 reps each leg",
+                                description: "Extend your legs straight while sitting to stretch hamstrings",
+                                icon: "🦵",
+                                videoId: "8BcPHWGQO44"
+                            },
+                            {
+                                name: "Standing Desk Stretch",
+                                duration: "1 minute",
+                                description: "Simple full-body stretch you can do at your standing desk",
+                                icon: "🧍‍♂️",
+                                videoId: "9N6ZQz-CV44"
+                            }
+                        ].map((exercise, index) => (
+                            <div
+                                key={index}
+                                className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border border-emerald-100 hover:shadow-md transition-all duration-300 cursor-pointer"
+                                onClick={() => setSelectedExercise(exercise)}
+                            >
+                                <div className="flex items-center space-x-3 mb-2">
+                                    <span className="text-2xl">{exercise.icon}</span>
+                                    <h3 className="font-medium text-emerald-800">{exercise.name}</h3>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{exercise.description}</p>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-medium text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full">
+                                        {exercise.duration}
+                                    </span>
+                                    <span className="text-xs text-emerald-600 hover:text-emerald-700">
+                                        Click to watch video ▶️
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Workout Plan Card */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-xl font-semibold text-green-600 mb-4">Your Workout Plan</h3>
-                    <p className="text-gray-600 mb-4">Get personalized workouts based on your activity level.</p>
-                    <button
-                        onClick={() => navigate("/workout")}
-                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                    >
-                        View Workout Plan
-                    </button>
-                </div>
+                {/* Video Modal */}
+                {selectedExercise && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg max-w-3xl w-full p-4">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-semibold text-gray-900">
+                                    {selectedExercise.name}
+                                </h3>
+                                <button
+                                    onClick={() => setSelectedExercise(null)}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <div className="relative pt-[56.25%] w-full">
+                                <iframe
+                                    className="absolute inset-0 w-full h-full"
+                                    src={`https://www.youtube.com/embed/${selectedExercise.videoId}`}
+                                    title={`${selectedExercise.name} demonstration`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                            <div className="mt-4">
+                                <p className="text-gray-600">{selectedExercise.description}</p>
+                                <p className="text-sm text-emerald-600 mt-2">Duration: {selectedExercise.duration}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
