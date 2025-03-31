@@ -23,6 +23,7 @@ import { Toaster } from "react-hot-toast";
 import WorkoutEquipment from "./pages/WorkoutEquipment";
 import ChatButton from "./components/ChatButton";
 import ExerciseDifficulty from "./pages/ExerciseDifficulty";
+import StretchingPreference from "./pages/StretchingPreference";
 
 function App() {
   const location = useLocation();  
@@ -43,6 +44,7 @@ function App() {
         <Route path="/activity-level" element={<ActivityLevelSelection />} />
         <Route path="/exercise-routine" element={<ExerciseRoutine />} />
         <Route path="/pain-injury-form" element={<PainAndInjuryForm />} />
+        <Route path="/stretching-preference" element={<StretchingPreference />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/bmi-calculator" element={<BMICalculator />} />
         <Route path="/calender" element={<Calender />} />

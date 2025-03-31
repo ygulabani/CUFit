@@ -154,9 +154,42 @@ def get_user_profile(request):
 
         data = {
             "pain_and_injury": profile.pain_and_injury,
+            "stretching_preference": profile.stretching_preference,
         }
 
         return Response(data)
 
     except Profile.DoesNotExist:
         return Response({"error": "User profile not found"}, status=404)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_stretching_preference(request):
+    try:
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        preference = request.data.get("stretching_preference")
+        
+        if preference is None:
+            return Response(
+                {"error": "Stretching preference is required"}, 
+                status=400
+            )
+            
+        profile.stretching_preference = preference
+        profile.save()
+        
+        return Response(
+            {"message": "Stretching preference updated successfully!"}, 
+            status=200
+        )
+    except Profile.DoesNotExist:
+        return Response(
+            {"error": "Profile not found"}, 
+            status=404
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)}, 
+            status=500
+        )

@@ -74,7 +74,7 @@ const PainAndInjuryForm = () => {
           pain_and_injury,
         }),
       });
-      navigate("/dashboard");
+      navigate("/stretching-preference");
     } catch (error) {
       console.error("Error updating profile:", error);
     }

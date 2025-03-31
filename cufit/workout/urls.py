@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/update-exercise-routine/', views.update_exercise_routine, name='update_exercise_routine'),
     path('api/save-equipment/', views.save_equipment, name='save-equipment'),
     path('get-profile/', get_user_profile, name='get_user_profile'),
+    path('api/update-stretching-preference/', views.update_stretching_preference, name='update_stretching_preference'),
 ]
