@@ -3,6 +3,7 @@ from django.urls import path
 from users.views import update_profile, get_user_profile
 from users import views
 from users.views import cufit_chatbot
+from users.views.user_profile import update_exercise_difficulty
 
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("chatbot/", cufit_chatbot, name="chatbot"),
+    path("exercise-difficulty/", update_exercise_difficulty, name="exercise_difficulty"),
 ]

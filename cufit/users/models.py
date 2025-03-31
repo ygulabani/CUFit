@@ -47,6 +47,12 @@ DIET_PREFERENCE_CHOICES = [
     ("detox", "Detox Diet"),
 ]
 
+# 💪 Exercise Difficulty Choices
+EXERCISE_DIFFICULTY_CHOICES = [
+    ("beginner", "Beginner"),
+    ("intermediate", "Intermediate"),
+    ("advanced", "Advanced"),
+]
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -68,6 +74,7 @@ class Profile(models.Model):
     activity_level = models.CharField(max_length=50, blank=True, null=True)
     exercise_routine = models.TextField(blank=True, null=True)
     pain_and_injury = models.TextField(blank=True, null=True)
+    exercise_difficulty = models.CharField(max_length=20, choices=EXERCISE_DIFFICULTY_CHOICES, blank=True, null=True)
 
     def str(self):
         return f"{self.user.username} - Profile"

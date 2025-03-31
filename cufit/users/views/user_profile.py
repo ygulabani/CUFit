@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from users.models import Profile
+from users.models import Profile, EXERCISE_DIFFICULTY_CHOICES
 
 from rest_framework.decorators import (
     api_view,
@@ -139,6 +139,9 @@ def update_profile(request):
     profile.pain_and_injury = request.data.get(
         "pain_and_injury", profile.pain_and_injury
     )
+    profile.exercise_difficulty = request.data.get(
+        "exercise_difficulty", profile.exercise_difficulty
+    )
 
     profile.save()
 
@@ -163,8 +166,44 @@ def get_user_profile(request):
             "exercise_routine": profile.exercise_routine or "Not selected",
             "pain_and_injury": profile.pain_and_injury or "Not selected",
             "bmi": profile.bmi or "Not selected",
+            "exercise_difficulty": profile.exercise_difficulty or "Not selected",
         }
         return Response(data, status=200)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=404)
+
+@api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def update_exercise_difficulty(request):
+    user = request.user
+    try:
+        profile = Profile.objects.get(user=user)
+        difficulty = request.data.get("difficulty")
+        
+        if not difficulty:
+            return Response(
+                {"error": "Difficulty level is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        valid_difficulties = [choice[0] for choice in EXERCISE_DIFFICULTY_CHOICES]
+        if difficulty not in valid_difficulties:
+            return Response(
+                {"error": "Invalid difficulty level"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        profile.exercise_difficulty = difficulty
+        profile.save()
+        
+        return Response(
+            {"message": "Exercise difficulty updated successfully!"}, 
+            status=status.HTTP_200_OK
+        )
+    except Profile.DoesNotExist:
+        return Response(
+            {"error": "Profile not found"}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
     

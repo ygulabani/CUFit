@@ -1,14 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const UserMealPlan = () => {
     const navigate = useNavigate();
     const [mealPlan, setMealPlan] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchMealPlan = async () => {
+    const fetchUserProfile = useCallback(async (token) => {
+        try {
+            const response = await axios.get("http://localhost:8000/get-profile/", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setUserProfile(response.data);
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+            setError("Failed to load user profile. Please try again.");
+        }
+    }, []);
+
+    const fetchMealPlan = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -20,6 +33,10 @@ const UserMealPlan = () => {
         }
 
         try {
+            // Fetch user profile first
+            await fetchUserProfile(token);
+
+            // Then fetch meal plan
             const response = await axios.get("http://localhost:8000/meals/api/user-meal-plan/", {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -31,17 +48,24 @@ const UserMealPlan = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchUserProfile]);
 
     useEffect(() => {
         fetchMealPlan();
-    }, []);
+    }, [fetchMealPlan]);
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
         </div>
     );
+
+    // Helper function to check if a meal type is included in the plan
+    const isMealTypeIncluded = (mealType) => {
+        if (!userProfile?.meal_plan_selection) return false;
+        const selection = userProfile.meal_plan_selection.toLowerCase();
+        return selection.includes(mealType.toLowerCase());
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
@@ -68,10 +92,18 @@ const UserMealPlan = () => {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        <MealSection title="Breakfast" meals={mealPlan?.breakfast} />
-                        <MealSection title="Lunch" meals={mealPlan?.lunch} />
-                        <MealSection title="Dinner" meals={mealPlan?.dinner} />
-                        <MealSection title="Snacks" meals={mealPlan?.snacks} />
+                        {isMealTypeIncluded("breakfast") && (
+                            <MealSection title="Breakfast" meals={mealPlan?.breakfast} />
+                        )}
+                        {isMealTypeIncluded("lunch") && (
+                            <MealSection title="Lunch" meals={mealPlan?.lunch} />
+                        )}
+                        {isMealTypeIncluded("dinner") && (
+                            <MealSection title="Dinner" meals={mealPlan?.dinner} />
+                        )}
+                        {isMealTypeIncluded("snacks") && (
+                            <MealSection title="Snacks" meals={mealPlan?.snacks} />
+                        )}
                     </div>
                 )}
             </div>

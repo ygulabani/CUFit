@@ -209,25 +209,37 @@ const Dashboard = () => {
                             </h2>
                         </div>
                         <div className="space-y-4">
-                            {mealPlan && Object.entries(mealPlan).map(([mealType, meals]) => (
-                                <div
-                                    key={mealType}
-                                    className="border-b border-gray-100 pb-4 last:border-0"
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-medium text-gray-900 capitalize">
-                                            {mealType}
-                                        </h3>
+                            {mealPlan && Object.entries(mealPlan).map(([mealType, meals]) => {
+                                // Check if this meal type is included in the user's meal plan selection
+                                const isMealTypeIncluded = () => {
+                                    if (!userData?.meal_plan_selection) return false;
+                                    const selection = userData.meal_plan_selection.toLowerCase();
+                                    return selection.includes(mealType.toLowerCase());
+                                };
+
+                                // Only render the meal section if it's included in the user's selection
+                                if (!isMealTypeIncluded()) return null;
+
+                                return (
+                                    <div
+                                        key={mealType}
+                                        className="border-b border-gray-100 pb-4 last:border-0"
+                                    >
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className="font-medium text-gray-900 capitalize">
+                                                {mealType}
+                                            </h3>
+                                        </div>
+                                        <div className="text-sm text-gray-600">
+                                            {meals.map((meal, index) => (
+                                                <div key={index} className="mb-1">
+                                                    {meal.name} - {meal.calories} calories
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-gray-600">
-                                        {meals.map((meal, index) => (
-                                            <div key={index} className="mb-1">
-                                                {meal.name} - {meal.calories} calories
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 

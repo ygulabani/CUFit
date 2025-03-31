@@ -69,7 +69,7 @@ const ActivityLevelSelection = () => {
                 },
                 body: JSON.stringify({ activity_level: selectedLevel }),
             });
-            navigate("/workout-equipment");
+            navigate("/exercise-difficulty");
         } catch (error) {
             console.error("Error updating profile:", error);
         }
