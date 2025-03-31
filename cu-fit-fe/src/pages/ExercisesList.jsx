@@ -6,29 +6,108 @@ export default function ExercisesList() {
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
   useEffect(() => {
-    const fetchExercises = async () => {
+    const fetchUserProfile = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/workout/api/exercises/", {
+        const profileResponse = await fetch("http://127.0.0.1:8000/workout/get-profile/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
-        if (!response.ok) {
-          throw new Error("Failed to fetch exercises");
+  
+        if (!profileResponse.ok) {
+          throw new Error("Failed to fetch user profile");
         }
-        const data = await response.json();
-        setExercises(data.exercises);
+  
+        const profileData = await profileResponse.json();
+        const rawInjuries = profileData.pain_and_injury;
+        let injuries = [];
+  
+        if (rawInjuries && typeof rawInjuries === "string") {
+          injuries = rawInjuries
+            .split(",")
+            .map(item => item.trim())
+            .filter(injury =>
+              injury &&
+              injury.toLowerCase() !== "none" &&
+              !injury.toLowerCase().includes("pain level")
+            );
+        }
+  
+        if (injuries.length === 0) {
+          fetchAllExercises();
+        } else {
+          fetchFilteredExercises(injuries);
+        }
+  
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
+  
+    const fetchAllExercises = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/workout/api/exercises/", {
 
-    fetchExercises();
-  }, []);
+
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to fetch all exercises");
+        }
+  
+        const data = await response.json();
+        setExercises(data.exercises || []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+  
+    const fetchFilteredExercises = async (injuries) => {
+      try {
+        const queryParams = injuries.map(injury => `pain_and_injury=${injury}`).join("&");
+        const url = `http://127.0.0.1:8000/workout/api/exercises/?${queryParams}`;
+
+
+  
+        const exercisesResponse = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!exercisesResponse.ok) {
+          throw new Error("Failed to fetch filtered exercises");
+        }
+  
+        const exercisesData = await exercisesResponse.json();
+        setExercises(exercisesData.exercises || []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+  
+    if (token) {
+      fetchUserProfile();
+    } else {
+      setError("User is not authenticated");
+      setLoading(false);
+    }
+  }, [token]);
+  
 
   if (loading) {
     return (

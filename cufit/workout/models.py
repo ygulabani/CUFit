@@ -7,10 +7,19 @@ class Exercise(models.Model):
     name = models.CharField(max_length=100)
     body_part = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=50)
-    type = models.CharField(max_length=50, blank=True, null=True)  
+    type = models.CharField(max_length=50, blank=True, null=True)
+
+    IMPACT_CHOICES = [
+        ('Low', 'Low'),
+        ('Medium', 'Medium'),
+        ('High', 'High'),
+    ]
+
+    impact_level = models.CharField(max_length=10, choices=IMPACT_CHOICES, default='Medium')
 
     def __str__(self):
         return self.name
+
 
 class MasterWorkout(models.Model):
     name = models.CharField(max_length=100)
