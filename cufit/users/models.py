@@ -75,6 +75,7 @@ class Profile(models.Model):
     exercise_routine = models.TextField(blank=True, null=True)
     pain_and_injury = models.TextField(blank=True, null=True)
     exercise_difficulty = models.CharField(max_length=20, choices=EXERCISE_DIFFICULTY_CHOICES, blank=True, null=True)
+    stretching_preference = models.BooleanField(default=False)
 
     def str(self):
         return f"{self.user.username} - Profile"
