@@ -29,8 +29,8 @@ def get_exercises(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_master_workouts(request):
-    workouts = MasterWorkout.objects.all()
-    serializer = MasterWorkoutSerializer(workouts, many=True)
+    workouts = ExerciseLibrary.objects.all()
+    serializer = ExerciseSerializer(workouts, many=True)
     return Response({"workout_master": serializer.data})
 
 

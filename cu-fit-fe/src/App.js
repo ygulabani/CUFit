@@ -1,4 +1,4 @@
-﻿import { Routes, Route, useLocation } from "react-router-dom";  // ❌ Remove Router from here
+﻿import { Routes, Route, useLocation } from "react-router-dom"; // ❌ Remove Router from here
 import GoalSelection from "./pages/GoalSelection";
 import DietSelection from "./pages/DietSelection";
 import DietPreference from "./pages/DietPreference";
@@ -25,9 +25,10 @@ import ChatButton from "./components/ChatButton";
 import ExerciseDifficulty from "./pages/ExerciseDifficulty";
 import StretchingPreference from "./pages/StretchingPreference";
 import EditPreferences from "./pages/EditPreferences";
+import Subscription from "./pages/Subscription";
 
 function App() {
-  const location = useLocation();  
+  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,7 +46,10 @@ function App() {
         <Route path="/activity-level" element={<ActivityLevelSelection />} />
         <Route path="/exercise-routine" element={<ExerciseRoutine />} />
         <Route path="/pain-injury-form" element={<PainAndInjuryForm />} />
-        <Route path="/stretching-preference" element={<StretchingPreference />} />
+        <Route
+          path="/stretching-preference"
+          element={<StretchingPreference />}
+        />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/bmi-calculator" element={<BMICalculator />} />
         <Route path="/calender" element={<Calender />} />
@@ -57,12 +61,13 @@ function App() {
         <Route path="/user-workout" element={<UserWorkout />} />
         <Route path="/exercise-difficulty" element={<ExerciseDifficulty />} />
         <Route path="/edit-preferences" element={<EditPreferences />} />
+        <Route path="/subscription" element={<Subscription />} />
       </Routes>
 
       {/* ✅ ChatButton will NOT appear on the login page */}
       {location.pathname !== "/login" &&
-       location.pathname !== "/" &&
-       location.pathname !== "/signup" && <ChatButton />}
+        location.pathname !== "/" &&
+        location.pathname !== "/signup" && <ChatButton />}
     </div>
   );
 }

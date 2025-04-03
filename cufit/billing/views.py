@@ -52,7 +52,7 @@ class CheckoutSessionView(APIView):
                     }
                 ],
                 mode="subscription",
-                success_url=request.build_absolute_uri("/billing/plans/"),
+                success_url="http://localhost:3000/dashboard",
                 cancel_url=request.build_absolute_uri("/billing/"),
             )
 

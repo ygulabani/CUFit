@@ -217,3 +217,27 @@ def update_exercise_difficulty(request):
             status=status.HTTP_404_NOT_FOUND
         )
     
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def check_subscription_status(request):
+    user = request.user
+    try:
+        custom_user = CustomUser.objects.get(username=user.username)
+        has_subscription = custom_user.selected_plan is not None and custom_user.customer_id is not None
+        
+        return Response({
+            "has_subscription": has_subscription,
+            "selected_plan": custom_user.selected_plan.name if custom_user.selected_plan else None,
+            "customer_id": custom_user.customer_id
+        }, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return Response({
+            "has_subscription": False,
+            "selected_plan": None,
+            "customer_id": None
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    

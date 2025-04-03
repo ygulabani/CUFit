@@ -102,7 +102,7 @@ export default function WorkoutMaster() {
                 </div>
 
                 <button
-                  onClick={() => setSelectedVideo(workout.video_url)}
+                  onClick={() => setSelectedVideo(workout.video_link)}
                   className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors duration-200 flex items-center justify-center"
                 >
                   <svg

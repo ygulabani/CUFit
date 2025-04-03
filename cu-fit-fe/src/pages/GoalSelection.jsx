@@ -138,7 +138,7 @@ export default function GoalSelection() {
                 if (isEditing) {
                     navigate("/edit-preferences");
                 } else {
-                    navigate("/activity-level-selection");
+                    navigate("/activity-level");
                 }
             } else {
                 toast.error("Failed to save goal. Please try again.");
