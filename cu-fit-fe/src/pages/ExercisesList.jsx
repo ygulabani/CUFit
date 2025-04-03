@@ -5,10 +5,14 @@ export default function ExercisesList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
+  console.log("Token from localStorage:", token);
   useEffect(() => {
+    
     const fetchUserProfile = async () => {
       try {
-        const profileResponse = await fetch("http://127.0.0.1:8000/workout/get-profile/", {
+        console.log("Sending request with token:", token);
+        const profileResponse = await fetch("http://127.0.0.1:8000/api/get-profile/", {
+
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -49,7 +53,7 @@ export default function ExercisesList() {
   
     const fetchAllExercises = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/workout/api/exercises/", {
+        const response = await fetch("http://127.0.0.1:8000/api/exercises/", {
 
 
           method: "GET",
@@ -75,7 +79,7 @@ export default function ExercisesList() {
     const fetchFilteredExercises = async (injuries) => {
       try {
         const queryParams = injuries.map(injury => `pain_and_injury=${injury}`).join("&");
-        const url = `http://127.0.0.1:8000/workout/api/exercises/?${queryParams}`;
+        const url = `http://127.0.0.1:8000/api/exercises/?${queryParams}`;
 
 
   

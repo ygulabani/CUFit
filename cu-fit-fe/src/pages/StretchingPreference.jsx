@@ -20,7 +20,7 @@ const StretchingPreference = () => {
             }
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/workout/api/update-stretching-preference/",
+                "http://127.0.0.1:8000/update-stretching-preference/",
                 { stretching_preference: wantsStretching },
                 {
                     headers: {

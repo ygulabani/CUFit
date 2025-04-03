@@ -1,4 +1,4 @@
-from .models import Exercise, MasterWorkout, Equipment, WorkoutExercise
+from .models import ExerciseLibrary, MasterWorkout, Equipment, WorkoutExercise
 from users.models import Profile
 from .serializers import ExerciseSerializer, MasterWorkoutSerializer
 
@@ -14,14 +14,15 @@ def get_exercises(request):
     pain_and_injury = request.query_params.getlist('pain_and_injury', [])
 
     if len(pain_and_injury) >= 2:
-        exercises = Exercise.objects.filter(impact_level="Low")
+        exercises = ExerciseLibrary.objects.filter(impact_level="Low")
     elif len(pain_and_injury) == 1:
-        exercises = Exercise.objects.filter(impact_level__in=["Low", "Medium"])
+        exercises = ExerciseLibrary.objects.filter(impact_level__in=["Low", "Medium"])
     else:
-        exercises = Exercise.objects.all()
+        exercises = ExerciseLibrary.objects.all()
 
     serializer = ExerciseSerializer(exercises, many=True)
     return Response({"exercises": serializer.data})
+
 
 
 # GET API for master workout page
@@ -149,6 +150,7 @@ def get_user_workout(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
+    print("🔍 request.user:", request.user)
     try:
         profile = Profile.objects.get(user=request.user)
 
@@ -160,7 +162,9 @@ def get_user_profile(request):
         return Response(data)
 
     except Profile.DoesNotExist:
+        print("❌ Profile not found for user:", request.user)
         return Response({"error": "User profile not found"}, status=404)
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])

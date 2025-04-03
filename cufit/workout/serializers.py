@@ -1,12 +1,13 @@
 from rest_framework import serializers
-from .models import Exercise, MasterWorkout
+from .models import ExerciseLibrary, MasterWorkout  
 
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Exercise
+        model = ExerciseLibrary  
         fields = '__all__'
+
 
 
 class MasterWorkoutSerializer(serializers.ModelSerializer):

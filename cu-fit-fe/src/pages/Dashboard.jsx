@@ -63,7 +63,7 @@ const Dashboard = () => {
                 }
 
                 // Fetch workout plan
-                const workoutResponse = await fetch("http://127.0.0.1:8000/workout/api/user-workout/", {
+                const workoutResponse = await fetch("http://127.0.0.1:8000/api/user-workout/", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
