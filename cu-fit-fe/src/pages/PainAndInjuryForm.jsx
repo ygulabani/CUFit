@@ -158,162 +158,195 @@ const PainAndInjuryForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-green-600">
-            Injury & Pain Assessment
-          </h1>
-          <p className="text-gray-600">
-            Tell us about your pain, injuries, and limitations.
-          </p>
-        </div>
+        <div className="bg-white/70 backdrop-blur-lg rounded-[2rem] shadow-2xl overflow-hidden border border-white/20">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 sm:p-8 md:p-10 relative">
+            <button
+              onClick={() => navigate(-1)}
+              className="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white font-medium px-4 py-2 rounded-full hover:bg-white/30 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-green-800/10"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">
+              Pain & Injury Information
+            </h2>
+            <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
+              Help us customize your workout plan by sharing any pain or injuries
+            </p>
+          </div>
 
-        {/* Pain Areas */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Areas of Pain
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {painAreas.map((area) => (
+          <div className="p-6 sm:p-8 md:p-10">
+            {/* Pain Areas */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Areas of Pain
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {painAreas.map((area) => (
+                  <button
+                    key={area}
+                    onClick={() =>
+                      handleToggle(selectedPainAreas, setSelectedPainAreas, area)
+                    }
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                      selectedPainAreas.includes(area)
+                        ? "bg-green-500 text-white"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                    }`}
+                  >
+                    {area}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Injuries */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Current Injuries or Limitations
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {injuriesList.map((injury) => (
+                  <button
+                    key={injury}
+                    onClick={() =>
+                      handleToggle(selectedInjuries, setSelectedInjuries, injury)
+                    }
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                      selectedInjuries.includes(injury)
+                        ? "bg-green-500 text-white"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                    }`}
+                  >
+                    {injury}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Surgeries */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Recent Surgeries
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {surgeriesList.map((surgery) => (
+                  <button
+                    key={surgery}
+                    onClick={() =>
+                      handleToggle(selectedSurgeries, setSelectedSurgeries, surgery)
+                    }
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                      selectedSurgeries.includes(surgery)
+                        ? "bg-green-500 text-white"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                    }`}
+                  >
+                    {surgery}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Motion Limitations */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Range of Motion Limitations
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {motionLimitationsList.map((limitation) => (
+                  <button
+                    key={limitation}
+                    onClick={() =>
+                      handleToggle(
+                        selectedMotionLimitations,
+                        setSelectedMotionLimitations,
+                        limitation
+                      )
+                    }
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                      selectedMotionLimitations.includes(limitation)
+                        ? "bg-green-500 text-white"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                    }`}
+                  >
+                    {limitation}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Medical Conditions */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Medical Conditions
+              </h3>
+              <select
+                value={selectedMedicalCondition}
+                onChange={(e) => setSelectedMedicalCondition(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                {medicalConditions.map((condition) => (
+                  <option key={condition} value={condition}>
+                    {condition}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Pain Level */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Pain Level During Movement
+              </h3>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={painLevel}
+                onChange={(e) => setPainLevel(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-gray-600 text-center mt-2">
+                Pain Level: {painLevel}/10
+              </p>
+            </div>
+
+            {/* Submit Button */}
+            <div className="mt-8 text-center">
               <button
-                key={area}
-                onClick={() =>
-                  handleToggle(selectedPainAreas, setSelectedPainAreas, area)
-                }
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                  selectedPainAreas.includes(area)
-                    ? "bg-green-500 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                onClick={handleNext}
+                disabled={loading}
+                className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
+                  loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-2xl hover:shadow-green-200 hover:scale-[1.02]"
                 }`}
               >
-                {area}
+                <span className="relative z-10">
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      {isEditing ? "Save Changes" : "Next"}
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  )}
+                </span>
               </button>
-            ))}
+            </div>
           </div>
-        </div>
-
-        {/* Injuries */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Current Injuries or Limitations
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {injuriesList.map((injury) => (
-              <button
-                key={injury}
-                onClick={() =>
-                  handleToggle(selectedInjuries, setSelectedInjuries, injury)
-                }
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                  selectedInjuries.includes(injury)
-                    ? "bg-green-500 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                }`}
-              >
-                {injury}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Surgeries */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Recent Surgeries
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {surgeriesList.map((surgery) => (
-              <button
-                key={surgery}
-                onClick={() =>
-                  handleToggle(selectedSurgeries, setSelectedSurgeries, surgery)
-                }
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                  selectedSurgeries.includes(surgery)
-                    ? "bg-green-500 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                }`}
-              >
-                {surgery}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Motion Limitations */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Range of Motion Limitations
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {motionLimitationsList.map((limitation) => (
-              <button
-                key={limitation}
-                onClick={() =>
-                  handleToggle(
-                    selectedMotionLimitations,
-                    setSelectedMotionLimitations,
-                    limitation
-                  )
-                }
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                  selectedMotionLimitations.includes(limitation)
-                    ? "bg-green-500 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                }`}
-              >
-                {limitation}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Medical Conditions */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Medical Conditions
-          </h2>
-          <select
-            value={selectedMedicalCondition}
-            onChange={(e) => setSelectedMedicalCondition(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            {medicalConditions.map((condition) => (
-              <option key={condition} value={condition}>
-                {condition}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Pain Level */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Pain Level During Movement
-          </h2>
-          <input
-            type="range"
-            min="0"
-            max="10"
-            value={painLevel}
-            onChange={(e) => setPainLevel(e.target.value)}
-            className="w-full"
-          />
-          <p className="text-gray-600 text-center mt-2">
-            Pain Level: {painLevel}/10
-          </p>
-        </div>
-
-        {/* Next Button */}
-        <div className="text-center">
-          <button
-            onClick={handleNext}
-            disabled={loading}
-            className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors duration-200"
-          >
-            {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
-          </button>
         </div>
       </div>
     </div>

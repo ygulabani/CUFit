@@ -109,94 +109,144 @@ export default function BMICalculator() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-4 rounded-xl shadow-lg w-96 relative mt-5">
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative">
                 <button 
                     onClick={() => isEditing ? navigate("/edit-preferences") : navigate(-1)}
-                    className="absolute top-3 left-3 bg-white text-green-600 font-bold px-4 py-2 rounded-lg shadow-md border border-green-600 hover:bg-gray-100 transition"
+                    className="absolute top-4 left-4 bg-white text-green-600 font-semibold px-4 py-2 rounded-lg shadow-sm border border-green-200 hover:bg-green-50 transition"
                 >
-                    Back
+                    ← Back
                 </button>
 
-                <h2 className="text-xl font-bold mb-3 text-center mt-8">
-                    BMI Calculator
-                </h2>
-
-                <label className="text-sm">Gender:</label>
-                <select
-                    className="w-full p-1 border rounded mb-2"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-
-                <label className="text-sm">Height:</label>
-                <div className="flex mb-2">
-                    <input
-                        type="number"
-                        className="w-full p-1 border rounded"
-                        value={height}
-                        onChange={(e) => setHeight(e.target.value)}
-                    />
-                    <select
-                        className="ml-2 p-1 border rounded"
-                        value={heightUnit}
-                        onChange={(e) => setHeightUnit(e.target.value)}
-                    >
-                        <option value="cm">cm</option>
-                        <option value="feet">feet</option>
-                    </select>
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-bold text-green-600 mb-2">
+                        BMI Calculator
+                    </h2>
+                    <p className="text-gray-600">Calculate your Body Mass Index</p>
                 </div>
 
-                <label className="text-sm">Weight:</label>
-                <div className="flex mb-2">
-                    <input
-                        type="number"
-                        className="w-full p-1 border rounded"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
-                    />
-                    <select
-                        className="ml-2 p-1 border rounded"
-                        value={weightUnit}
-                        onChange={(e) => setWeightUnit(e.target.value)}
-                    >
-                        <option value="kg">kg</option>
-                        <option value="lb">lb</option>
-                    </select>
-                </div>
-
-                <label className="text-sm">Age:</label>
-                <input
-                    type="number"
-                    className="w-full p-1 border rounded mb-2"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                />
-
-                <button
-                    className="w-full bg-green-500 text-white p-2 rounded mt-3 hover:bg-green-700 transition mx-auto block"
-                    onClick={calculateBMI}
-                >
-                    Calculate
-                </button>
-
-                {bmi && (
-                    <div className="mt-3 text-center">
-                        <p className="text-lg font-bold">BMI: {bmi}</p>
-                        <p className="text-gray-600">{comment}</p>
+                <div className="space-y-6">
+                    {/* Gender Selection */}
+                    <div className="flex justify-center space-x-4 mb-6">
+                        <button
+                            onClick={() => setGender("male")}
+                            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                                gender === "male"
+                                    ? "bg-green-500 text-white shadow-md"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
+                        >
+                            Male
+                        </button>
+                        <button
+                            onClick={() => setGender("female")}
+                            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                                gender === "female"
+                                    ? "bg-green-500 text-white shadow-md"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
+                        >
+                            Female
+                        </button>
                     </div>
-                )}
 
-                <button
-                    className="w-full mt-4 bg-white text-green-600 font-bold px-4 py-2 rounded-lg shadow-md border border-green-600 hover:bg-gray-100 transition"
-                    onClick={handleSave}
-                    disabled={!bmi || loading}
-                >
-                    {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
-                </button>
+                    {/* Height Input */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Height</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="number"
+                                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                value={height}
+                                onChange={(e) => setHeight(e.target.value)}
+                                placeholder="Enter height"
+                            />
+                            <select
+                                className="w-24 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                value={heightUnit}
+                                onChange={(e) => setHeightUnit(e.target.value)}
+                            >
+                                <option value="cm">cm</option>
+                                <option value="feet">feet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Weight Input */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Weight</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="number"
+                                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                value={weight}
+                                onChange={(e) => setWeight(e.target.value)}
+                                placeholder="Enter weight"
+                            />
+                            <select
+                                className="w-24 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                value={weightUnit}
+                                onChange={(e) => setWeightUnit(e.target.value)}
+                            >
+                                <option value="kg">kg</option>
+                                <option value="lb">lb</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Age Input */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Age</label>
+                        <input
+                            type="number"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            value={age}
+                            onChange={(e) => setAge(e.target.value)}
+                            placeholder="Enter age"
+                        />
+                    </div>
+
+                    {/* Calculate Button */}
+                    <button
+                        className="w-full bg-green-500 text-white p-4 rounded-lg font-semibold hover:bg-green-600 transition-all shadow-md hover:shadow-lg"
+                        onClick={calculateBMI}
+                    >
+                        Calculate BMI
+                    </button>
+
+                    {/* BMI Result */}
+                    {bmi && (
+                        <div className="mt-6 p-6 bg-green-50 rounded-lg text-center">
+                            <p className="text-4xl font-bold text-green-600 mb-2">{bmi}</p>
+                            <p className="text-lg font-medium text-gray-700">{comment}</p>
+                            <div className="mt-4">
+                                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                        className="h-full bg-green-500 transition-all duration-500"
+                                        style={{ 
+                                            width: `${Math.min(100, (parseFloat(bmi) / 50) * 100)}%` 
+                                        }}
+                                    ></div>
+                                </div>
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Underweight</span>
+                                    <span>Normal</span>
+                                    <span>Overweight</span>
+                                    <span>Obese</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Save Button */}
+                    <button
+                        className="w-full mt-4 bg-white text-green-600 font-semibold px-4 py-3 rounded-lg shadow-sm border border-green-200 hover:bg-green-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleSave}
+                        disabled={!bmi || loading}
+                    >
+                        {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -16,35 +16,52 @@ const EditPreferences = () => {
         { name: "Workout Equipment", path: "/workout-equipment", icon: "🏋️" },
         { name: "Exercise Routine", path: "/exercise-routine", icon: "🎽" },
         { name: "Pain & Injury", path: "/pain-injury-form", icon: "🤕" },
-        { name: "Cheat days", path: "/calender", icon: "📅" }
+        { name: "Rest Days", path: "/calender", icon: "📅" }
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-semibold text-gray-900">Edit Your Preferences</h1>
-                    <button
-                        onClick={() => navigate("/dashboard")}
-                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                    >
-                        Back to Dashboard
-                    </button>
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-4 sm:p-6 lg:p-8">
+            <div className="max-w-2xl mx-auto">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6">
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-2xl font-bold text-gray-900">Edit Preferences</h1>
+                        <button
+                            onClick={() => navigate("/dashboard")}
+                            className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 group"
+                        >
+                            <span className="text-xl group-hover:rotate-12 transition-transform duration-300">🏠</span>
+                            Back
+                        </button>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {preferences.map((pref) => (
-                        <button
-                            key={pref.name}
-                            onClick={() => navigate(pref.path, { state: { isEditing: true }})}
-                            className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:border-green-300 hover:shadow-md transition-all text-left"
-                        >
-                            <div className="flex items-center space-x-3">
-                                <span className="text-2xl">{pref.icon}</span>
-                                <span className="text-gray-800 font-medium">{pref.name}</span>
-                            </div>
-                        </button>
-                    ))}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+                    <div className="divide-y divide-gray-100">
+                        {preferences.map((pref) => (
+                            <button
+                                key={pref.name}
+                                onClick={() => navigate(pref.path, { state: { isEditing: true }})}
+                                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 transition-all duration-300 group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
+                                        {pref.icon}
+                                    </span>
+                                    <span className="text-gray-900 font-medium group-hover:text-emerald-700 transition-colors">
+                                        {pref.name}
+                                    </span>
+                                </div>
+                                <svg 
+                                    className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transform group-hover:translate-x-1 transition-all duration-300" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
