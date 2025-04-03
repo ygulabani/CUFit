@@ -1,5 +1,6 @@
-﻿import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const timeOptions = [
   "Less than 10 minutes",
@@ -11,11 +12,51 @@ const timeOptions = [
 
 const CookingTimeSelection = () => {
   const [selectedTime, setSelectedTime] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isEditing = location.state?.isEditing || false;
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // If editing, fetch current cooking time preference
+    if (isEditing) {
+      const fetchCurrentPreference = async () => {
+        try {
+          const response = await fetch("http://localhost:8000/workout/get-profile/", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          });
+          const data = await response.json();
+          if (data.cooking_time_preference) {
+            setSelectedTime(data.cooking_time_preference);
+          }
+        } catch (error) {
+          console.error("Error fetching cooking time preference:", error);
+          toast.error("Failed to fetch current cooking time preference");
+        }
+      };
+      fetchCurrentPreference();
+    }
+  }, [navigate, isEditing]);
 
   const handleNext = async () => {
+    if (!selectedTime) {
+      toast.error("Please select a cooking time preference");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      await fetch("http://localhost:8000/update-profile/", {
+      const response = await fetch("http://localhost:8000/update-profile/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,9 +66,22 @@ const CookingTimeSelection = () => {
           cooking_time_preference: selectedTime,
         }),
       });
-      navigate("/meal-plan-selection");
+
+      if (response.ok) {
+        toast.success("Cooking time preference saved successfully!");
+        if (isEditing) {
+          navigate("/edit-preferences");
+        } else {
+          navigate("/meal-plan-selection");
+        }
+      } else {
+        toast.error("Failed to save cooking time preference. Please try again.");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error("Failed to save cooking time preference");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +119,7 @@ const CookingTimeSelection = () => {
         <div className="text-center">
           <button
             onClick={handleNext}
-            disabled={!selectedTime}
+            disabled={!selectedTime || loading}
             className={`w-full py-3 rounded-lg font-semibold transition-colors
                         ${
                           selectedTime
@@ -74,7 +128,7 @@ const CookingTimeSelection = () => {
                         }
                         `}
           >
-            Next
+            {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
           </button>
         </div>
       </div>

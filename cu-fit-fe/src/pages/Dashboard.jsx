@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -13,22 +14,19 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+
             try {
+                setLoading(true);
+                setError(null);
+
                 // Fetch user profile
-                const profileResponse = await fetch("http://127.0.0.1:8000/workout/get-profile/", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                const profileResponse = await axios.get("http://localhost:8000/workout/get-profile/", {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-
-                if (profileResponse.status === 404) {
-                    // If profile doesn't exist, redirect to calendar page
-                    navigate("/calender");
-                    return;
-                }
-
-                if (!profileResponse.ok) throw new Error("Failed to fetch profile");
-                const profileData = await profileResponse.json();
 
                 // Set default values for missing data
                 const defaultData = {
@@ -40,54 +38,56 @@ const Dashboard = () => {
                     exercise_routine: "No exercise routine set",
                     bmi: "Not set",
                     stretching_preference: false,
+                    meal_plan_selection: "Not set"
                 };
 
                 // Merge profile data with defaults
-                const completeProfileData = { ...defaultData, ...profileData };
-                
-                // Debug stretching preference
-                console.log("Profile data:", profileData);
-                console.log("Stretching preference:", profileData.stretching_preference);
-                console.log("Complete profile data:", completeProfileData);
-                console.log("Complete stretching preference:", completeProfileData.stretching_preference);
+                const completeProfileData = { ...defaultData, ...profileResponse.data };
+                console.log("Profile data:", completeProfileData); // Debug log
 
-                // Fetch meal plan
-                const mealPlanResponse = await fetch("http://127.0.0.1:8000/meals/api/user-meal-plan/", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                setUserData(completeProfileData);
 
-                let mealPlanData = {
-                    breakfast: [],
-                    lunch: [],
-                    dinner: [],
-                    snacks: []
-                };
-
-                if (mealPlanResponse.ok) {
-                    mealPlanData = await mealPlanResponse.json();
+                // Fetch meal plan if meal_plan_selection is set
+                if (completeProfileData.meal_plan_selection !== "Not set") {
+                    try {
+                        const mealPlanResponse = await axios.get("http://localhost:8000/meals/api/user-meal-plan/", {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        setMealPlan(mealPlanResponse.data);
+                    } catch (mealError) {
+                        console.error("Error fetching meal plan:", mealError);
+                        setMealPlan({
+                            breakfast: [],
+                            lunch: [],
+                            dinner: [],
+                            snacks: []
+                        });
+                    }
                 }
 
                 // Fetch workout plan
-                const workoutResponse = await fetch("http://127.0.0.1:8000/api/user-workout/", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (workoutResponse.ok) {
-                    const workoutData = await workoutResponse.json();
-                    setWorkoutPlan(workoutData);
+                try {
+                    const workoutResponse = await axios.get("http://localhost:8000/workout/api/user-workout/", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    
+                    if (workoutResponse.data?.exercises) {
+                        setWorkoutPlan(workoutResponse.data);
+                        console.log("Workout data:", workoutResponse.data); // Debug log
+                    } else {
+                        setWorkoutPlan(null);
+                    }
+                } catch (workoutError) {
+                    console.error("Error fetching workout plan:", workoutError);
+                    setWorkoutPlan(null);
                 }
 
-                setUserData(completeProfileData);
-                setMealPlan(mealPlanData);
             } catch (err) {
-                if (err.message === "Failed to fetch profile") {
+                console.error("Error fetching user data:", err);
+                if (err.response?.status === 404) {
                     navigate("/calender");
                 } else {
-                    setError(err.message);
+                    setError(err.message || "Failed to load dashboard data");
                 }
             } finally {
                 setLoading(false);
@@ -115,6 +115,14 @@ const Dashboard = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-xl text-red-600">Error: {error}</div>
+            </div>
+        );
+    }
+
+    if (!userData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-xl text-gray-600">No user data available. Please complete your profile.</div>
             </div>
         );
     }
@@ -155,10 +163,10 @@ const Dashboard = () => {
                         My Workout Plan
                     </button>
                     <button
-                        onClick={() => navigate("/calender")}
+                        onClick={() => navigate("/edit-preferences")}
                         className="bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 transition font-semibold"
                     >
-                        Edit Preference
+                        Edit Preferences
                     </button>
                     <button
                         onClick={() => navigate("/user-meal-plan")}
@@ -253,57 +261,64 @@ const Dashboard = () => {
 
                     {/* Exercise Routine */}
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                            Exercise Routine
-                        </h2>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-gray-900">
+                                Exercise Routine
+                            </h2>
+                            <button
+                                onClick={() => navigate("/user-workout")}
+                                className="text-sm bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                            >
+                                View Full Workout
+                            </button>
+                        </div>
                         <div className="divide-y divide-gray-100">
-                            {workoutPlan ? (
-                                <div className="space-y-6">
-                                    {/* Warm Up Section */}
-                                    {workoutPlan.warm_up && workoutPlan.warm_up.length > 0 && (
-                                        <div className="py-3">
-                                            <h3 className="font-medium text-gray-900 mb-2">Warm Up</h3>
-                                            <div className="space-y-2">
-                                                {workoutPlan.warm_up.map((exercise, index) => (
-                                                    <div key={index} className="text-sm text-gray-600">
-                                                        • {exercise.name} - {exercise.sets} sets × {exercise.reps} reps
-                                                    </div>
-                                                ))}
+                            {workoutPlan?.exercises ? (
+                                <div className="space-y-4">
+                                    {/* Display a preview of exercises */}
+                                    {workoutPlan.exercises.slice(0, 5).map((exercise, index) => (
+                                        <div key={index} className="py-2">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <h3 className="font-medium text-gray-900">{exercise.name}</h3>
+                                                    <p className="text-sm text-gray-600">{exercise.body_part} - {exercise.exercise_type}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                                        {exercise.difficulty}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
+                                                <div className="text-center bg-gray-50 rounded p-1">
+                                                    <span className="text-gray-600">Sets: {exercise.sets}</span>
+                                                </div>
+                                                <div className="text-center bg-gray-50 rounded p-1">
+                                                    <span className="text-gray-600">Reps: {exercise.reps}</span>
+                                                </div>
+                                                <div className="text-center bg-gray-50 rounded p-1">
+                                                    <span className="text-gray-600">{exercise.duration} min</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    )}
-
-                                    {/* Main Exercises Section */}
-                                    {workoutPlan.main_exercises && workoutPlan.main_exercises.length > 0 && (
-                                        <div className="py-3">
-                                            <h3 className="font-medium text-gray-900 mb-2">Main Exercises</h3>
-                                            <div className="space-y-2">
-                                                {workoutPlan.main_exercises.map((exercise, index) => (
-                                                    <div key={index} className="text-sm text-gray-600">
-                                                        • {exercise.name} - {exercise.sets} sets × {exercise.reps} reps
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Cool Down Section */}
-                                    {workoutPlan.cool_down && workoutPlan.cool_down.length > 0 && (
-                                        <div className="py-3">
-                                            <h3 className="font-medium text-gray-900 mb-2">Cool Down</h3>
-                                            <div className="space-y-2">
-                                                {workoutPlan.cool_down.map((exercise, index) => (
-                                                    <div key={index} className="text-sm text-gray-600">
-                                                        • {exercise.name} - {exercise.duration} minutes
-                                                    </div>
-                                                ))}
-                                            </div>
+                                    ))}
+                                    {workoutPlan.exercises.length > 5 && (
+                                        <div className="text-center pt-4">
+                                            <span className="text-sm text-gray-500">
+                                                +{workoutPlan.exercises.length - 5} more exercises
+                                            </span>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="py-3 text-gray-500">
-                                    No exercise routine set
+                                <div className="py-3 text-center text-gray-500">
+                                    <p>No exercise routine set</p>
+                                    <button
+                                        onClick={() => navigate("/user-workout")}
+                                        className="mt-2 text-sm text-green-600 hover:text-green-700"
+                                    >
+                                        Set up your workout plan →
+                                    </button>
                                 </div>
                             )}
                         </div>

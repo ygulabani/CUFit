@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const exerciseOptions = [
     { id: "strength", name: "💪 Strength Training (Muscle Building & Toning)" },
@@ -11,25 +12,80 @@ const exerciseOptions = [
 
 const ExerciseRoutine = () => {
     const [selectedExercise, setSelectedExercise] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const isEditing = location.state?.isEditing || false;
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        // If editing, fetch current exercise routine
+        if (isEditing) {
+            const fetchCurrentRoutine = async () => {
+                try {
+                    const response = await fetch("http://localhost:8000/workout/get-profile/", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.exercise_routine) {
+                        setSelectedExercise(data.exercise_routine);
+                    }
+                } catch (error) {
+                    console.error("Error fetching exercise routine:", error);
+                    toast.error("Failed to fetch current exercise routine");
+                }
+            };
+            fetchCurrentRoutine();
+        }
+    }, [navigate, isEditing]);
 
     const handleExerciseSelect = (exerciseId) => {
         setSelectedExercise(exerciseId);
     };
 
     const handleNext = async () => {
+        if (!selectedExercise) {
+            toast.error("Please select an exercise routine");
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            await fetch("http://localhost:8000/update-profile/", {
+            const response = await fetch("http://localhost:8000/update-profile/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: JSON.stringify({ exercise_routine: selectedExercise }),
+                body: JSON.stringify({
+                    exercise_routine: selectedExercise,
+                }),
             });
-            navigate("/pain-injury-form");
+
+            if (response.ok) {
+                toast.success("Exercise routine saved successfully!");
+                if (isEditing) {
+                    navigate("/edit-preferences");
+                } else {
+                    navigate("/pain-injury-form");
+                }
+            } else {
+                toast.error("Failed to save exercise routine. Please try again.");
+            }
         } catch (error) {
             console.error("Error updating profile:", error);
+            toast.error("Failed to save exercise routine");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -52,11 +108,11 @@ const ExerciseRoutine = () => {
                             key={exercise.id}
                             onClick={() => handleExerciseSelect(exercise.id)}
                             className={`p-6 rounded-lg border-2 transition-all duration-200 hover:shadow-lg text-left
-                ${selectedExercise === exercise.id
+                                ${selectedExercise === exercise.id
                                     ? "border-green-500 bg-green-50"
-                                    : "border-gray-200 bg-white hover:border-green-300"
+                                    : "border-gray-200 bg-white hover:border-green-200"
                                 }
-              `}
+                            `}
                         >
                             <h3 className="text-lg font-semibold text-gray-900">
                                 {exercise.name}
@@ -73,16 +129,17 @@ const ExerciseRoutine = () => {
                 {selectedExercise && (
                     <div className="mt-8 flex justify-between">
                         <button
-                            onClick={() => navigate("/previous-page")} // Replace with actual previous route
+                            onClick={() => navigate(-1)}
                             className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-500 transition-colors duration-200"
                         >
                             Back
                         </button>
                         <button
                             onClick={handleNext}
+                            disabled={loading}
                             className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors duration-200"
                         >
-                            Next
+                            {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
                         </button>
                     </div>
                 )}

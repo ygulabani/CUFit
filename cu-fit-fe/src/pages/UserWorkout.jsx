@@ -9,6 +9,15 @@ const UserWorkout = () => {
     const [error, setError] = useState(null);
     const [filterInfo, setFilterInfo] = useState(null);
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+        fetchWorkoutPlan();
+    }, [navigate]);
+
     const fetchWorkoutPlan = async () => {
         setLoading(true);
         setError(null);
@@ -22,22 +31,37 @@ const UserWorkout = () => {
 
         try {
             const response = await axios.get("http://localhost:8000/workout/api/user-workout/", {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
             });
 
-            setExercises(response.data.exercises || []);
-            setFilterInfo(response.data.filters_applied || {});
+            console.log("Workout response:", response.data); // Debug log
+
+            if (response.data && response.data.exercises) {
+                setExercises(response.data.exercises);
+                setFilterInfo(response.data.filters_applied || {});
+            } else {
+                setError("No workout data available. Please complete your profile first.");
+            }
         } catch (error) {
             console.error("Error fetching workout plan:", error);
-            setError(error.response?.data?.error || "Failed to load workout plan. Please try again.");
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
+            } else if (error.response?.status === 404) {
+                navigate("/calender");
+            } else {
+                setError(
+                    error.response?.data?.error || 
+                    "Failed to load workout plan. Please try again."
+                );
+            }
         } finally {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchWorkoutPlan();
-    }, []);
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -96,19 +120,23 @@ const UserWorkout = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                                    <div className="text-center">
+                                <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
+                                    <div className="text-center bg-gray-100 rounded p-2">
                                         <span className="font-medium text-green-600">Sets</span>
                                         <p className="text-gray-600">{exercise.sets}</p>
                                     </div>
-                                    <div className="text-center">
+                                    <div className="text-center bg-gray-100 rounded p-2">
                                         <span className="font-medium text-green-600">Reps</span>
                                         <p className="text-gray-600">{exercise.reps}</p>
                                     </div>
+                                    <div className="text-center bg-gray-100 rounded p-2">
+                                        <span className="font-medium text-green-600">Duration</span>
+                                        <p className="text-gray-600">{exercise.duration} min</p>
+                                    </div>
                                 </div>
                                 {exercise.instructions && (
-                                    <div className="mt-3 text-sm text-gray-600">
-                                        <p className="font-medium text-green-600">Instructions:</p>
+                                    <div className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                                        <p className="font-medium text-green-600 mb-1">Instructions:</p>
                                         <p>{exercise.instructions}</p>
                                     </div>
                                 )}
@@ -118,9 +146,9 @@ const UserWorkout = () => {
                                             href={exercise.video_link}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-green-500 hover:text-green-600 text-sm"
+                                            className="inline-flex items-center text-green-500 hover:text-green-600 text-sm bg-green-50 px-4 py-2 rounded-full"
                                         >
-                                            Watch Tutorial →
+                                            Watch Tutorial <span className="ml-1">→</span>
                                         </a>
                                     </div>
                                 )}
@@ -128,7 +156,15 @@ const UserWorkout = () => {
                         ))}
                     </div>
                 ) : (
-                    <p className="text-gray-500 text-center py-4">No exercises available for your current profile.</p>
+                    <div className="text-center py-8">
+                        <p className="text-gray-500 mb-4">No exercises available for your current profile.</p>
+                        <button
+                            onClick={() => navigate("/calender")}
+                            className="text-green-500 hover:text-green-600 text-sm bg-green-50 px-4 py-2 rounded-full"
+                        >
+                            Complete Your Profile →
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

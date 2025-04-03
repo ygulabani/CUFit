@@ -222,20 +222,30 @@ def get_user_workout(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
-    print("request.user:", request.user)
     try:
         profile = Profile.objects.get(user=request.user)
-
-        data = {
-            "pain_and_injury": profile.pain_and_injury,
-            "stretching_preference": profile.stretching_preference,
+        profile_data = {
+            'diet_selection': profile.diet_selection,
+            'activity_level': profile.activity_level,
+            'diet_preference': profile.diet_preference,
+            'cooking_time_preference': profile.cooking_time_preference,
+            'goal_selection': profile.goal_selection,
+            'stretching_preference': profile.stretching_preference,
+            'bmi': profile.bmi,
+            'meal_plan_selection': profile.meal_plan_selection,
+            'pain_and_injury': profile.pain_and_injury
         }
-
-        return Response(data)
-
+        return Response(profile_data)
     except Profile.DoesNotExist:
-        print("❌ Profile not found for user:", request.user)
-        return Response({"error": "User profile not found"}, status=404)
+        return Response(
+            {'error': 'Profile not found'},
+            status=404
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=500
+        )
 
 
 @api_view(["POST"])

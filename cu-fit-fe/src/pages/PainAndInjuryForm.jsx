@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const painAreas = ["Knees", "Shoulders", "Back", "Ankles", "Hips", "Neck"];
 const injuriesList = [
@@ -45,7 +46,69 @@ const PainAndInjuryForm = () => {
   const [selectedMedicalCondition, setSelectedMedicalCondition] =
     useState("None");
   const [painLevel, setPainLevel] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isEditing = location.state?.isEditing || false;
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // If editing, fetch current pain and injury data
+    if (isEditing) {
+      const fetchCurrentData = async () => {
+        try {
+          const response = await fetch("http://localhost:8000/workout/get-profile/", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          });
+          const data = await response.json();
+          if (data.pain_and_injury) {
+            // Parse the pain and injury data from the string
+            const painAndInjuryData = data.pain_and_injury.split(", ");
+            
+            // Reset all selections
+            setSelectedPainAreas([]);
+            setSelectedInjuries([]);
+            setSelectedSurgeries([]);
+            setSelectedMotionLimitations([]);
+            setSelectedMedicalCondition("None");
+            setPainLevel(0);
+            
+            // Process each item in the pain and injury data
+            painAndInjuryData.forEach(item => {
+              if (painAreas.includes(item)) {
+                setSelectedPainAreas(prev => [...prev, item]);
+              } else if (injuriesList.includes(item)) {
+                setSelectedInjuries(prev => [...prev, item]);
+              } else if (surgeriesList.includes(item)) {
+                setSelectedSurgeries(prev => [...prev, item]);
+              } else if (motionLimitationsList.includes(item)) {
+                setSelectedMotionLimitations(prev => [...prev, item]);
+              } else if (medicalConditions.includes(item)) {
+                setSelectedMedicalCondition(item);
+              } else if (item.startsWith("Pain Level: ")) {
+                const level = parseInt(item.replace("Pain Level: ", ""));
+                if (!isNaN(level)) {
+                  setPainLevel(level);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching pain and injury data:", error);
+          toast.error("Failed to fetch current pain and injury data");
+        }
+      };
+      fetchCurrentData();
+    }
+  }, [navigate, isEditing]);
 
   const handleToggle = (selectedList, setSelectedList, item) => {
     setSelectedList((prev) =>
@@ -54,6 +117,7 @@ const PainAndInjuryForm = () => {
   };
 
   const handleNext = async () => {
+    setLoading(true);
     try {
       const pain_and_injury = [
         ...selectedPainAreas,
@@ -64,7 +128,7 @@ const PainAndInjuryForm = () => {
         `Pain Level: ${painLevel}`,
       ].join(", ");
 
-      await fetch("http://localhost:8000/update-profile/", {
+      const response = await fetch("http://localhost:8000/update-profile/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,9 +138,22 @@ const PainAndInjuryForm = () => {
           pain_and_injury,
         }),
       });
-      navigate("/stretching-preference");
+
+      if (response.ok) {
+        toast.success("Pain and injury information saved successfully!");
+        if (isEditing) {
+          navigate("/edit-preferences");
+        } else {
+          navigate("/stretching-preference");
+        }
+      } else {
+        toast.error("Failed to save pain and injury information. Please try again.");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error("Failed to save pain and injury information");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -232,9 +309,10 @@ const PainAndInjuryForm = () => {
         <div className="text-center">
           <button
             onClick={handleNext}
+            disabled={loading}
             className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors duration-200"
           >
-            Next
+            {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
           </button>
         </div>
       </div>

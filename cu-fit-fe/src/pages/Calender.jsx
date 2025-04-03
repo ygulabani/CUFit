@@ -1,14 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isEditing = location.state?.isEditing || false;
   const [selectedDates, setSelectedDates] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // If editing, fetch current rest days
+    if (isEditing) {
+      const fetchCurrentData = async () => {
+        try {
+          const response = await fetch("http://localhost:8000/workout/get-profile/", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          });
+          const data = await response.json();
+          if (data.rest_days) {
+            // Parse the rest days from the string
+            const restDays = data.rest_days.split(",").filter(day => day.trim() !== "");
+            if (restDays.length > 0) {
+              setSelectedDates(restDays.map(day => new Date(day)));
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching rest days:", error);
+          toast.error("Failed to fetch current rest days");
+        }
+      };
+      fetchCurrentData();
+    }
+  }, [navigate, isEditing]);
 
   const handleDateClick = (date) => {
     if (
@@ -46,6 +83,7 @@ const CalendarPage = () => {
   };
 
   const handleConfirm = async () => {
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:8000/update-profile/", {
         method: "POST",
@@ -53,17 +91,23 @@ const CalendarPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ rest_days: selectedDates.join(",") }),
+        body: JSON.stringify({ rest_days: selectedDates.map(date => date.toISOString().split('T')[0]).join(",") }),
       });
       if (response.ok) {
         toast.success("Rest days saved successfully!");
-        navigate("/bmi-calculator");
+        if (isEditing) {
+          navigate("/edit-preferences");
+        } else {
+          navigate("/bmi-calculator");
+        }
       } else {
         toast.error("Failed to save rest days. Please try again.");
       }
     } catch (error) {
       toast.error("Failed to save rest days. Please try again.");
       console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,8 +142,8 @@ const CalendarPage = () => {
           <Button onClick={handleReset} isReset>
             Reset Dates
           </Button>
-          <Button onClick={handleConfirm} disabled={selectedDates.length === 0}>
-            Confirm Days
+          <Button onClick={handleConfirm} disabled={selectedDates.length === 0 || loading}>
+            {loading ? "Saving..." : isEditing ? "Save Changes" : "Confirm Days"}
           </Button>
         </ButtonContainer>
       </SelectedDatesSection>

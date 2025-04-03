@@ -1,5 +1,6 @@
-﻿import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const dietOptions = [
     { id: "veg", name: "Vegetarian", icon: "🥦" },
@@ -12,15 +13,55 @@ const dietOptions = [
 
 const DietPreference = () => {
     const [selectedDiet, setSelectedDiet] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const isEditing = location.state?.isEditing || false;
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        // If editing, fetch current diet preference
+        if (isEditing) {
+            const fetchCurrentPreference = async () => {
+                try {
+                    const response = await fetch("http://localhost:8000/workout/get-profile/", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.diet_preference) {
+                        setSelectedDiet(data.diet_preference);
+                    }
+                } catch (error) {
+                    console.error("Error fetching diet preference:", error);
+                    toast.error("Failed to fetch current diet preference");
+                }
+            };
+            fetchCurrentPreference();
+        }
+    }, [navigate, isEditing]);
 
     const handleDietSelect = (dietId) => {
         setSelectedDiet(dietId);
     };
 
     const handleNext = async () => {
+        if (!selectedDiet) {
+            toast.error("Please select a diet preference");
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            await fetch("http://localhost:8000/update-profile/", {
+            const response = await fetch("http://localhost:8000/update-profile/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -28,9 +69,22 @@ const DietPreference = () => {
                 },
                 body: JSON.stringify({ diet_preference: selectedDiet }),
             });
-            navigate("/cooking-time");
+
+            if (response.ok) {
+                toast.success("Diet preference saved successfully!");
+                if (isEditing) {
+                    navigate("/edit-preferences");
+                } else {
+                    navigate("/cooking-time");
+                }
+            } else {
+                toast.error("Failed to save diet preference. Please try again.");
+            }
         } catch (error) {
             console.error("Error updating profile:", error);
+            toast.error("Failed to save diet preference");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -74,9 +128,10 @@ const DietPreference = () => {
                     <div className="mt-8 text-center">
                         <button
                             onClick={handleNext}
+                            disabled={loading}
                             className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors duration-200"
                         >
-                            Next
+                            {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
                         </button>
                     </div>
                 )}

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const fitnessGoals = [
     {
@@ -76,63 +77,119 @@ const fitnessGoals = [
     },
 ];
 
-const GoalSelection = () => {
-    const [selectedGoals, setSelectedGoals] = useState([]);
+export default function GoalSelection() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const isEditing = location.state?.isEditing || false;
 
-    const handleGoalSelect = (goalId) => {
-        setSelectedGoals((prev) =>
-            prev.includes(goalId) ? prev.filter((id) => id !== goalId) : [...prev, goalId]
-        );
-    };
+    const [selectedGoal, setSelectedGoal] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleNext = async () => {
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        // If editing, fetch current goal
+        if (isEditing) {
+            const fetchCurrentGoal = async () => {
+                try {
+                    const response = await fetch("http://localhost:8000/workout/get-profile/", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.goal_selection) {
+                        setSelectedGoal(data.goal_selection);
+                    }
+                } catch (error) {
+                    console.error("Error fetching goal:", error);
+                    toast.error("Failed to fetch current goal");
+                }
+            };
+            fetchCurrentGoal();
+        }
+    }, [navigate, isEditing]);
+
+    const handleSave = async () => {
+        if (!selectedGoal) {
+            toast.error("Please select a goal");
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            await fetch("http://localhost:8000/update-profile/", {
+            const response = await fetch("http://localhost:8000/update-profile/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: JSON.stringify({ goal_selection: selectedGoals }),
+                body: JSON.stringify({ goal_selection: selectedGoal }),
             });
-            navigate("/diet-selection");
+
+            if (response.ok) {
+                toast.success("Goal saved successfully!");
+                if (isEditing) {
+                    navigate("/edit-preferences");
+                } else {
+                    navigate("/activity-level-selection");
+                }
+            } else {
+                toast.error("Failed to save goal. Please try again.");
+            }
         } catch (error) {
-            console.error("Error updating profile:", error);
+            console.error("Error saving goal:", error);
+            toast.error("Failed to save goal");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl mx-auto text-center">
-                <h1 className="text-3xl font-bold text-green-600 mb-6">Select Your Fitness Goals</h1>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white p-4 rounded-xl shadow-lg w-96 relative mt-5">
+                <button 
+                    onClick={() => isEditing ? navigate("/edit-preferences") : navigate(-1)}
+                    className="absolute top-3 left-3 bg-white text-green-600 font-bold px-4 py-2 rounded-lg shadow-md border border-green-600 hover:bg-gray-100 transition"
+                >
+                    Back
+                </button>
+
+                <h2 className="text-xl font-bold mb-3 text-center mt-8">
+                    Select Your Goal
+                </h2>
+
+                <div className="space-y-2">
                     {fitnessGoals.map((goal) => (
                         <button
                             key={goal.id}
-                            onClick={() => handleGoalSelect(goal.id)}
-                            className={`p-4 rounded-lg text-sm font-semibold transition-all 
-                ${selectedGoals.includes(goal.id) ? "bg-green-500 text-white" : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"}
-              `}
+                            className={`w-full p-3 text-left rounded-lg border transition ${
+                                selectedGoal === goal.id
+                                    ? "bg-green-100 border-green-500 text-green-700"
+                                    : "border-gray-200 hover:border-green-300"
+                            }`}
+                            onClick={() => setSelectedGoal(goal.id)}
                         >
                             {goal.icon} {goal.name}
                             <p className="text-xs text-gray-500">{goal.description}</p>
                         </button>
                     ))}
                 </div>
+
                 <button
-                    onClick={handleNext}
-                    disabled={selectedGoals.length === 0}
-                    className={`px-6 py-3 rounded-lg font-semibold ${selectedGoals.length > 0
-                            ? "bg-green-500 text-white hover:bg-green-600"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        }`}
+                    className="w-full mt-4 bg-white text-green-600 font-bold px-4 py-2 rounded-lg shadow-md border border-green-600 hover:bg-gray-100 transition"
+                    onClick={handleSave}
+                    disabled={!selectedGoal || loading}
                 >
-                    Next
+                    {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
                 </button>
             </div>
         </div>
     );
-};
-
-export default GoalSelection;
+}
