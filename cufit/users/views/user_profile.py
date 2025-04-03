@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from users.models import Profile, EXERCISE_DIFFICULTY_CHOICES
+from users.models import Profile, EXERCISE_DIFFICULTY_CHOICES, CustomUser
 
 from rest_framework.decorators import (
     api_view,
@@ -38,8 +38,8 @@ def signup_view(request):
         return Response(
             {
                 "message": "Signup successful",
-                "access token": access_token,
-                "refresh token": str(refresh),
+                "access_token": access_token,
+                "refresh_token": str(refresh),
             },
             status=status.HTTP_201_CREATED,
         )
@@ -154,6 +154,14 @@ def get_user_profile(request):
     user = request.user
     try:
         profile = Profile.objects.get(user=user)
+        # try:
+        #     custom_user = CustomUser.objects.get(user=user)
+        #     selected_plan_id = custom_user.selected_plan_id
+        #     customer_id = custom_user.customer_id
+        # except CustomUser.DoesNotExist:
+        #     selected_plan_id = None
+        #     customer_id = None
+
         data = {
             "username": user.username,
             "goal_selection": profile.goal_selection or "Not selected",
@@ -167,6 +175,8 @@ def get_user_profile(request):
             "pain_and_injury": profile.pain_and_injury or "Not selected",
             "bmi": profile.bmi or "Not selected",
             "exercise_difficulty": profile.exercise_difficulty or "Not selected",
+            # "selected_plan_id": selected_plan_id,
+            # "customer_id": customer_id
         }
         return Response(data, status=200)
     except Profile.DoesNotExist:

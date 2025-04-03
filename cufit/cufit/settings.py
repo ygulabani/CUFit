@@ -1,5 +1,8 @@
 ﻿import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "dbf00724-93aa-4396-beb4-89cdd574d3ba"
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     "meals",
     "workout",
     "corsheaders",
+    "billing",
 ]
 
 REST_FRAMEWORK = {
@@ -99,3 +103,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "landing/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "users.CustomUser"
+
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET")

@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
+from billing.models import Plan
+
 # 🍳 Cooking Time Choices
 COOKING_TIME_CHOICES = [
     ("<10", "Less than 10 minutes"),
@@ -56,6 +58,8 @@ EXERCISE_DIFFICULTY_CHOICES = [
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    selected_plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
+    customer_id = models.CharField(max_length=50, blank=True, null=True)
 
     def str(self):
         return self.username
