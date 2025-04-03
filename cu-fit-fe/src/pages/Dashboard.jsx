@@ -15,7 +15,7 @@ const Dashboard = () => {
         const fetchUserData = async () => {
             try {
                 // Fetch user profile
-                const profileResponse = await fetch("http://127.0.0.1:8000/get-profile/", {
+                const profileResponse = await fetch("http://127.0.0.1:8000/workout/get-profile/", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -39,10 +39,17 @@ const Dashboard = () => {
                     goal_selection: "Not set",
                     exercise_routine: "No exercise routine set",
                     bmi: "Not set",
+                    stretching_preference: false,
                 };
 
                 // Merge profile data with defaults
                 const completeProfileData = { ...defaultData, ...profileData };
+                
+                // Debug stretching preference
+                console.log("Profile data:", profileData);
+                console.log("Stretching preference:", profileData.stretching_preference);
+                console.log("Complete profile data:", completeProfileData);
+                console.log("Complete stretching preference:", completeProfileData.stretching_preference);
 
                 // Fetch meal plan
                 const mealPlanResponse = await fetch("http://127.0.0.1:8000/meals/api/user-meal-plan/", {
@@ -314,6 +321,9 @@ const Dashboard = () => {
                         </p>
                     </div>
                 </div>
+
+                {/* Debug stretching preference */}
+                {console.log("Rendering stretching section, value:", userData.stretching_preference)}
 
                 {/* Daily Stretching Exercises */}
                 {userData.stretching_preference && (

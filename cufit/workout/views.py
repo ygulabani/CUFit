@@ -77,63 +77,134 @@ def get_user_workout(request):
     try:
         # Get user's profile
         user_profile = Profile.objects.get(user=request.user)
-        activity_level = user_profile.activity_level.lower()
+        activity_level = user_profile.activity_level.lower() if user_profile.activity_level else 'moderate'
 
-        # Determine difficulty based on activity level
-        if activity_level in ['sedentary', 'light']:
-            difficulty = 'Beginner'
-        elif activity_level in ['moderate', 'very']:
-            difficulty = 'Intermediate'
-        else:  # extra or athlete
-            difficulty = 'Advanced'
+        # Map activity level to difficulty and impact level
+        activity_mapping = {
+            'sedentary': {
+                'difficulty': 'Beginner',
+                'impact_levels': ['Low']
+            },
+            'light': {
+                'difficulty': 'Beginner',
+                'impact_levels': ['Low', 'Medium']
+            },
+            'moderate': {
+                'difficulty': 'Intermediate',
+                'impact_levels': ['Low', 'Medium']
+            },
+            'very': {
+                'difficulty': 'Intermediate',
+                'impact_levels': ['Low', 'Medium', 'High']
+            },
+            'extra': {
+                'difficulty': 'Advanced',
+                'impact_levels': ['Medium', 'High']
+            },
+            'athlete': {
+                'difficulty': 'Advanced',
+                'impact_levels': ['High']
+            }
+        }
 
-        # Get exercises based on difficulty
-        warm_up = WorkoutExercise.objects.filter(
+        # Get difficulty and impact levels based on activity level
+        exercise_filters = activity_mapping.get(activity_level, {
+            'difficulty': 'Intermediate',  # Default difficulty
+            'impact_levels': ['Low', 'Medium']  # Default impact levels
+        })
+
+        difficulty = exercise_filters['difficulty']
+        impact_levels = exercise_filters['impact_levels']
+
+        # Get exercises based on difficulty and impact level
+        exercises = ExerciseLibrary.objects.filter(
             difficulty=difficulty,
-            exercise_type='Warm Up'
+            impact_level__in=impact_levels
         ).values(
-            'exercise_id',
+            'id',
             'name',
+            'body_part',
+            'difficulty',
+            'impact_level',
             'description',
             'duration',
-            'difficulty',
             'sets',
             'reps',
-            'video_link'
-        )
+            'video_link',
+            'exercise_type',
+            'instructions'
+        ).order_by('impact_level', 'body_part')
 
-        main_exercises = WorkoutExercise.objects.filter(
-            difficulty=difficulty,
-            exercise_type='Main Exercise'
-        ).values(
-            'exercise_id',
-            'name',
-            'description',
-            'duration',
-            'difficulty',
-            'sets',
-            'reps',
-            'video_link'
-        )
+        # If no exercises found, try to get exercises with adjusted filters
+        if not exercises.exists():
+            print(f"No exercises found for difficulty '{difficulty}' and impact levels {impact_levels}")
+            
+            # Try to find exercises with the same difficulty but any impact level
+            exercises = ExerciseLibrary.objects.filter(
+                difficulty=difficulty
+            ).values(
+                'id',
+                'name',
+                'body_part',
+                'difficulty',
+                'impact_level',
+                'description',
+                'duration',
+                'sets',
+                'reps',
+                'video_link',
+                'exercise_type',
+                'instructions'
+            ).order_by('impact_level', 'body_part')
 
-        cool_down = WorkoutExercise.objects.filter(
-            difficulty=difficulty,
-            exercise_type='Cool Down'
-        ).values(
-            'exercise_id',
-            'name',
-            'description',
-            'duration',
-            'difficulty',
-            'sets',
-            'reps',
-            'video_link'
-        )
+            if not exercises.exists():
+                print("No exercises found with current difficulty, trying all difficulties")
+                # If still no exercises, get all exercises
+                exercises = ExerciseLibrary.objects.all().values(
+                    'id',
+                    'name',
+                    'body_part',
+                    'difficulty',
+                    'impact_level',
+                    'description',
+                    'duration',
+                    'sets',
+                    'reps',
+                    'video_link',
+                    'exercise_type',
+                    'instructions'
+                ).order_by('difficulty', 'impact_level', 'body_part')
+
+        # Add default values for fields that might be missing
+        def add_default_values(exercises):
+            result = []
+            for exercise in exercises:
+                exercise_dict = dict(exercise)
+                if 'description' not in exercise_dict or not exercise_dict['description']:
+                    exercise_dict['description'] = f"Exercise targeting {exercise_dict.get('body_part', 'full body')}"
+                if 'duration' not in exercise_dict or not exercise_dict['duration']:
+                    exercise_dict['duration'] = 10  # Default duration in minutes
+                if 'sets' not in exercise_dict or not exercise_dict['sets']:
+                    exercise_dict['sets'] = 3  # Default sets
+                if 'reps' not in exercise_dict or not exercise_dict['reps']:
+                    exercise_dict['reps'] = 10  # Default reps
+                if 'video_link' not in exercise_dict:
+                    exercise_dict['video_link'] = None  # Default video link
+                if 'instructions' not in exercise_dict or not exercise_dict['instructions']:
+                    exercise_dict['instructions'] = f"Perform the exercise with proper form targeting {exercise_dict.get('body_part', 'full body')}"
+                result.append(exercise_dict)
+            return result
+
+        processed_exercises = add_default_values(exercises)
 
         return Response({
-            'warm_up': list(warm_up),
-            'main_exercises': list(main_exercises),
-            'cool_down': list(cool_down)
+            'exercises': processed_exercises,
+            'filters_applied': {
+                'difficulty': difficulty,
+                'impact_levels': impact_levels,
+                'activity_level': activity_level,
+                'total_exercises_found': len(processed_exercises)
+            }
         })
 
     except Profile.DoesNotExist:
@@ -142,6 +213,7 @@ def get_user_workout(request):
             status=404
         )
     except Exception as e:
+        print(f"Error in get_user_workout: {str(e)}")
         return Response(
             {'error': str(e)},
             status=500
@@ -150,7 +222,7 @@ def get_user_workout(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
-    print("🔍 request.user:", request.user)
+    print("request.user:", request.user)
     try:
         profile = Profile.objects.get(user=request.user)
 
