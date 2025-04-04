@@ -103,22 +103,6 @@ const UserMealPlan = () => {
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">Your Perfect Meal Plan</h2>
                             <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">Tailored to your preferences and goals</p>
                         </div>
-
-                        {/* Preferences Pills */}
-                        <div className="flex flex-wrap justify-center gap-3 items-center">
-                            <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-white flex items-center gap-2">
-                                <span className="text-lg">🥗</span>
-                                <span>{userProfile?.diet_selection || "Not set"}</span>
-                            </div>
-                            <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-white flex items-center gap-2">
-                                <span className="text-lg">🍽️</span>
-                                <span>{userProfile?.diet_preference || "Not set"}</span>
-                            </div>
-                            <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-white flex items-center gap-2">
-                                <span className="text-lg">⏰</span>
-                                <span>{userProfile?.cooking_time_preference || "Not set"}</span>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Meal Tabs */}
