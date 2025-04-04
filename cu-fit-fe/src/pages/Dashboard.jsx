@@ -375,15 +375,38 @@ const Dashboard = () => {
           </div>
 
           {/* Fitness Goals Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="text-2xl">🎯</span>
-              Your Fitness Goals
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              <span className="px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-800 rounded-full text-sm font-medium animate-pulse">
-                {userData.goal_selection || "Not set"}
-              </span>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <div className="flex items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-3">
+                  <span className="text-3xl transform group-hover:rotate-12 transition-transform duration-300">🎯</span>
+                  <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                    Your Fitness Goals
+                  </span>
+                </h2>
+              </div>
+              <div className="flex items-center justify-center w-full">
+                {userData.goal_selection ? (
+                  <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl shadow-lg shadow-green-100 transform hover:translate-y-[-2px] hover:shadow-xl transition-all duration-300">
+                    <span className="text-2xl">✨</span>
+                    <span className="text-lg font-medium">{userData.goal_selection}</span>
+                    <span className="text-2xl">💪</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-3 px-6 py-3 bg-gray-50 text-gray-500 rounded-xl border border-gray-200 w-full max-w-md">
+                    <span className="text-2xl">📝</span>
+                    <span className="text-lg">No goals set yet</span>
+                  </div>
+                )}
+              </div>
+              {userData.goal_selection && (
+                <div className="mt-6 text-center">
+                  <p className="text-gray-600 leading-relaxed">
+                    Stay focused on your goal! We'll help you track your progress and adjust your workouts accordingly.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
