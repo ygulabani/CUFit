@@ -56,18 +56,32 @@ def update_exercise_routine(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])  # Ensure the user is logged in
+@permission_classes([IsAuthenticated])
 def save_equipment(request):
     try:
-        user = request.user  # Get the logged-in user
-        selected_equipment = request.data.get("equipment", [])  # Get selected equipment
+        user = request.user
+        selected_equipment_str = request.data.get("workout_equipment", "")
+        selected_equipment = [item.strip() for item in selected_equipment_str.split(",") if item.strip()]
 
-        # Save each equipment item to the database
-        for item in selected_equipment:
+        new_equipment_set = set(selected_equipment)
+        existing_equipment_qs = Equipment.objects.filter(user=user)
+        existing_equipment_set = set(existing_equipment_qs.values_list('equipment_name', flat=True))
+
+        to_add = new_equipment_set - existing_equipment_set
+        to_remove = existing_equipment_set - new_equipment_set
+
+        if to_remove:
+            Equipment.objects.filter(user=user, equipment_name__in=to_remove).delete()
+
+        for item in to_add:
             Equipment.objects.create(user=user, equipment_name=item)
 
-        return Response({"message": "Equipment saved successfully!"}, status=201)
-    
+        return Response({
+            "message": "Equipment selection updated successfully!",
+            "added": list(to_add),
+            "removed": list(to_remove)
+        }, status=200)
+
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
