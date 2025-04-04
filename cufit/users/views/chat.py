@@ -10,81 +10,106 @@ from langchain_core.messages.ai import AIMessage
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 from typing import Annotated, Literal, TypedDict
-from meals.models import Meal
-from workout.models import Exercise
 
-# Load API key from .env file
+from meals.models import MealPlan
+from workout.models import ExerciseLibrary
+from users.models import Profile
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+# Load API key
 load_dotenv()
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
-# Define chatbot state
+# 🧠 Define chatbot state
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
     finished: bool
 
-# System instructions for the chatbot
-CUFIT_BOT_SYSINT = (
+# 📣 Static system instructions
+BASE_SYSTEM_INSTRUCTIONS = (
     "system",
-    " you can answer hello and thanks"
     "You are CUFITBot, an AI assistant that helps users with fitness, meal plans, and workouts. "
     "Only provide information from CUFIT's database. "
-    "You can retrieve meals, workouts, and exercise details for users. If a user asks for a workout suggestion, call the 'get_exercises' tool with the correct difficulty level (Beginner, Intermediate, or Advanced)."
-    "Avoid any off-topic discussions. If asked something unrelated, politely decline."
+    "You must only call 'get_meals' using the provided 'diet_selection', 'goal_selection', and 'diet_preference' values. "
+    "You can retrieve meals, workouts, and exercise details for users. "
+    "If a user asks for a workout suggestion, call the 'get_exercises' tool with the correct difficulty level "
+    "(Beginner, Intermediate, or Advanced). "
+    "Avoid any off-topic discussions. If asked something unrelated, politely decline. "
+    "Do not reveal or access any other user's data under any circumstance."
 )
 
 WELCOME_MSG = "Welcome to CUFITBot! 💪 How can I assist you today with your fitness journey?"
 
-# ✅ Custom tools to fetch data from CUFIT's database
+# ✅ Custom tools
 @tool
-def get_meals() -> str:
-    """Fetches all available meals from the database."""
-    meals = Meal.objects.all().values()
-    return list(meals) if meals else "No meals available."
-
-@tool
-def get_exercises(difficulty: str = "Beginner") -> str:
-    """Fetches a recommended workout plan based on difficulty level."""
+def get_meals(
+    diet_selection: str = None,
+    diet_preference: str = None,
+    meal_type: str = None
+) -> str:
+    """
+    Fetch personalized meals based on the user's diet, preference, and meal type.
+    """
     try:
-        difficulty = difficulty.strip().capitalize()  # ✅ Ensure correct format
-        
-        # Fetch exercises based on difficulty
-        exercises = list(Exercise.objects.filter(difficulty__iexact=difficulty).order_by("?")[:5].values("name", "difficulty"))
+        filters = {}
+        if diet_selection:
+            filters["diet_selection"] = diet_selection
+        if diet_preference:
+            filters["diet_preference"] = diet_preference
+        if meal_type:
+            filters["meal_type"] = meal_type
 
-        if not exercises:
-            return f"No {difficulty} workouts available in the database."
+        print("🔍 Meal filters passed to DB query:", filters)
 
-        print(f"DEBUG: {difficulty} Exercises fetched ->", exercises)  # ✅ Check in terminal
+        meals = list(MealPlan.objects.filter(**filters).values("name", "meal_type", "calories")[:5])
+        if not meals:
+            return "No meals found based on your preferences."
 
-        workout_list = "\n".join([f"- {exercise['name']} ({exercise['difficulty']})" for exercise in exercises])
-        return f"Here is a {difficulty} workout plan:\n{workout_list}"
+        response = "Here are some meal suggestions:\n"
+        for meal in meals:
+            response += f"- {meal['name']} ({meal['meal_type']}, {meal['calories']} cal)\n\n"
+        return response.strip()
 
     except Exception as e:
-        print("DEBUG: Error fetching exercises ->", str(e))  # ✅ Show error in Django console
-        return f"Error fetching {difficulty} workout plan: {str(e)}"
+        return f"Error fetching meals: {str(e)}"
 
-# Define chatbot logic
+@tool
+def get_exercises(difficulty: str = "Beginner", impact_level: str = "Low") -> str:
+    """Fetch personalized workouts based on difficulty and impact level."""
+    try:
+        exercises = list(ExerciseLibrary.objects.filter(
+            difficulty__iexact=difficulty.strip().capitalize(),
+            impact_level__iexact=impact_level.strip().capitalize()
+        ).values("name", "body_part", "difficulty", "impact_level", "instructions")[:5])
+
+        if not exercises:
+            return "No matching exercises found for your profile."
+
+        response = "Here are some exercises:\n"
+        for ex in exercises:
+            response += f"- {ex['name']} ({ex['body_part']}, {ex['difficulty']}, {ex['impact_level']})\nInstructions: {ex['instructions']}\n\n"
+        return response.strip()
+
+    except Exception as e:
+        return f"Error fetching exercises: {str(e)}"
+
+# 🔄 Routing logic
 def maybe_route_to_tools(state: AgentState) -> Literal["tools", "chatbot", "__end__"]:
-    """Routes to the tools node if a tool call is required."""
-    msgs = state["messages"]
-    msg = msgs[-1]
-
+    msg = state["messages"][-1]
     if hasattr(msg, "tool_calls") and len(msg.tool_calls) > 0:
         return "tools"
-    else:
-        return END
+    return END
 
 def chatbot(state: AgentState) -> AgentState:
-    """Handles chatbot logic."""
     defaults = {"finished": False}
-
     if state["messages"]:
-        new_output = llm_with_tools.invoke([CUFIT_BOT_SYSINT] + state["messages"])
+        new_output = llm_with_tools.invoke([BASE_SYSTEM_INSTRUCTIONS] + state["messages"])
     else:
         new_output = AIMessage(content=WELCOME_MSG)
-
     return defaults | state | {"messages": [new_output]}
 
-# Setup tools and chatbot graph
+# 🔧 Set up tools and graph
 tools = [get_meals, get_exercises]
 tool_node = ToolNode(tools)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
@@ -98,19 +123,51 @@ graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 chat_graph = graph_builder.compile()
 
-# ✅ API Endpoint for Chatbot
+# ✅ Personalized endpoint
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def cufit_chatbot(request):
-    if request.method == "POST":
+    try:
+        user = request.user
+        profile = Profile.objects.get(user=user)
+
+        print("🤖 USER PROFILE DEBUG:")
+        print("Diet Selection:", profile.diet_selection)
+        print("Goal:", profile.goal_selection)
+        print("Diet Preference:", profile.diet_preference)
         data = json.loads(request.body)
         user_message = data.get("message", "")
 
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
 
-        state = chat_graph.invoke({"messages": [{"role": "user", "content": user_message}]})
-        bot_reply = state["messages"][-1].content if hasattr(state["messages"][-1], "content") else "Sorry, I couldn't generate a response."
+        profile_info = f"""
+You are talking to {user.first_name or user.username}.
+Fitness goal: {profile.goal_selection}
+Diet: {profile.diet_selection or "N/A"} / {profile.diet_preference or "N/A"}
+Exercise level: {profile.exercise_difficulty or "Beginner"}
+"""
 
+        personalized_sys_msg = ("system", BASE_SYSTEM_INSTRUCTIONS[1] + "\n\n" + profile_info)
+
+        state = chat_graph.invoke({
+           "messages": [
+               personalized_sys_msg,
+               {"role": "user", "content": user_message}
+            ],
+            "diet_selection": profile.diet_selection,
+            "diet_preference": profile.diet_preference,
+            "meal_type": profile.meal_plan_selection
+        })
+
+        bot_reply = state["messages"][-1].content if hasattr(state["messages"][-1], "content") else "Sorry, I couldn't generate a response."
         return JsonResponse({"reply": bot_reply})
 
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    except Profile.DoesNotExist:
+        return JsonResponse({"error": "User profile not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
