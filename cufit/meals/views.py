@@ -100,12 +100,23 @@ def get_user_meal_plan(request):
         user_profile = get_object_or_404(Profile, user=request.user)
         
         # Get user preferences
+        diet_selection = user_profile.diet_selection
         diet_preference = user_profile.diet_preference
         goal_selection = user_profile.goal_selection
-        cooking_time = user_profile.cooking_time_preference
+        
+        # Convert cooking time to match model choices
+        cooking_time_map = {
+            "Less than 10 minutes": "<10",
+            "10 - 20 minutes": "10-20",
+            "20 - 30 minutes": "20-30",
+            "30 - 45 minutes": "30-45",
+            "More than 45 minutes": ">45"
+        }
+        cooking_time = cooking_time_map.get(user_profile.cooking_time_preference, "10-20")  # Default to 10-20 if not found
         
         # Base query to filter meals based on user preferences
         base_query = Q(
+            diet_selection=diet_selection,
             diet_preference=diet_preference,
             goal_selection=goal_selection,
             cooking_time=cooking_time
@@ -120,6 +131,7 @@ def get_user_meal_plan(request):
                 'meal_id',
                 'name',
                 'meal_type',
+                'diet_selection',
                 'diet_preference',
                 'goal_selection',
                 'cooking_time',
@@ -131,8 +143,28 @@ def get_user_meal_plan(request):
                 'instructions'
             ))
             
+            if not meals:  # If no exact matches, try with just diet preferences
+                meals = list(MealPlan.objects.filter(
+                    Q(diet_selection=diet_selection) | Q(diet_preference=diet_preference),
+                    meal_type=meal_type
+                ).values(
+                    'meal_id',
+                    'name',
+                    'meal_type',
+                    'diet_selection',
+                    'diet_preference',
+                    'goal_selection',
+                    'cooking_time',
+                    'calories',
+                    'protein',
+                    'carbs',
+                    'fat',
+                    'recipe_link',
+                    'instructions'
+                ))
+            
             # Randomly select meals up to the limit
-            return random.sample(meals, min(len(meals), limit))
+            return random.sample(meals, min(len(meals), limit)) if meals else []
         
         # Get meals for each meal type
         meal_plan = {
