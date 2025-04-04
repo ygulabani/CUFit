@@ -4,22 +4,22 @@ import { toast } from "react-hot-toast";
 
 const dietTypes = [
     {
-        id: "balanced",
-        name: "Balanced Diet",
-        icon: "🥗",
+        id: "no-diet",
+        name: "No Diet at all",
+        icon: "🚫",
         description: "A well-rounded diet with all food groups"
     },
     {
-        id: "vegetarian",
-        name: "Vegetarian",
-        icon: "🥬",
-        description: "No meat, includes dairy and eggs"
+        id: "fasting",
+        name: "Intermittent Fasting",
+        icon: "⏳",
+        description: "High nutritional value foods"
     },
     {
-        id: "vegan",
-        name: "Vegan",
-        icon: "🌱",
-        description: "Plant-based diet, no animal products"
+        id: "gluten-free",
+        name: "Gluten Free",
+        icon: "🌾🚫",
+        description: "Foods without wheat, barley, rye, or other gluten-containing grains"
     },
     {
         id: "keto",
@@ -28,16 +28,16 @@ const dietTypes = [
         description: "High-fat, low-carb diet"
     },
     {
-        id: "paleo",
-        name: "Paleo",
-        icon: "🥩",
-        description: "Based on foods available to our ancestors"
+        id: "raw-food",
+        name: "Raw Food",
+        icon: "🥦",
+        description: "Uncooked and unprocessed"
     },
     {
-        id: "mediterranean",
-        name: "Mediterranean",
-        icon: "🐟",
-        description: "Rich in fruits, vegetables, and healthy fats"
+        id: "bulking",
+        name: "Bulking",
+        icon: "💪",
+        description: "High protein and strength training."
     }
 ];
 

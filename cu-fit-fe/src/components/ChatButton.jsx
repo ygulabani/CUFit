@@ -1,29 +1,60 @@
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([{ role: "bot", content: "Welcome! How can I assist you? 💪" }]);
+  const [messages, setMessages] = useState([
+    { role: "bot", content: "Welcome! How can I assist you? 💪" }
+  ]);
   const [input, setInput] = useState("");
 
   const toggleChat = () => setIsOpen(!isOpen);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: "user", content: input }]);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to chat with CUFITBot.");
+      return;
+    }
+
+    setMessages(prev => [...prev, { role: "user", content: input }]);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/chatbot/", { message: input });
-      setMessages([...messages, { role: "user", content: input }, { role: "bot", content: response.data.reply }]);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/chatbot/",
+        { message: input },
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      setMessages(prev => [
+        ...prev,
+        { role: "bot", content: response.data.reply }
+      ]);
     } catch (error) {
-      setMessages([...messages, { role: "user", content: input }, { role: "bot", content: "Error fetching response." }]);
+      console.error("Chatbot error:", error);
+      setMessages(prev => [
+        ...prev,
+        { role: "bot", content: "Error fetching response." }
+      ]);
     }
+
     setInput("");
   };
 
   return (
     <>
-      <button onClick={toggleChat} className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700">
+      <button
+        onClick={toggleChat}
+        className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700"
+      >
         💬 Chat
       </button>
 
@@ -35,14 +66,32 @@ const ChatButton = () => {
           </div>
           <div className="p-4 h-64 overflow-y-auto">
             {messages.map((msg, index) => (
-              <p key={index} className={`text-sm p-2 ${msg.role === "user" ? "text-right bg-gray-200 rounded-lg" : "text-left bg-green-100 rounded-lg"}`}>
+              <p
+                key={index}
+                className={`text-sm p-2 ${
+                  msg.role === "user"
+                    ? "text-right bg-gray-200 rounded-lg"
+                    : "text-left bg-green-100 rounded-lg"
+                }`}
+              >
                 {msg.content}
               </p>
             ))}
           </div>
           <div className="p-3 border-t flex">
-            <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="flex-1 p-2 border rounded-l-lg" />
-            <button onClick={sendMessage} className="bg-green-600 text-white px-4 rounded-r-lg">➤</button>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 p-2 border rounded-l-lg"
+            />
+            <button
+              onClick={sendMessage}
+              className="bg-green-600 text-white px-4 rounded-r-lg"
+            >
+              ➤
+            </button>
           </div>
         </div>
       )}
