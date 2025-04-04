@@ -248,9 +248,9 @@ const CalendarPage = () => {
           <div className="p-6 sm:p-8 md:p-10">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl mb-8">
               <StyledCalendar
-                onChange={handleDateClick}
-                value={null}
-                tileClassName={tileClassName}
+        onChange={handleDateClick}
+        value={null}
+        tileClassName={tileClassName}
                 minDate={new Date()}
                 formatShortWeekday={(locale, date) => 
                   date.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2)
@@ -266,7 +266,7 @@ const CalendarPage = () => {
                 Selected Rest Days ({selectedDates.length}/4)
               </h3>
               <div className="space-y-2">
-                {selectedDates.map((date, index) => (
+          {selectedDates.map((date, index) => (
                   <div
                     key={index}
                     className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-all duration-300"
@@ -275,12 +275,12 @@ const CalendarPage = () => {
                       <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      {date.toLocaleDateString("en-US", {
+              {date.toLocaleDateString("en-US", {
                         weekday: 'short',
-                        month: "short",
-                        day: "2-digit",
-                        year: "numeric",
-                      })}
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              })}
                     </span>
                     <button
                       onClick={() => handleDateClick(date)}
@@ -312,7 +312,7 @@ const CalendarPage = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
-                  Reset Dates
+            Reset Dates
                 </button>
                 <button
                   onClick={handleConfirm}

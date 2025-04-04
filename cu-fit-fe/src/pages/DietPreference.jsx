@@ -105,15 +105,15 @@ const DietPreference = () => {
                         </button>
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">Select Your Diet Preference</h2>
                         <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">Choose the diet that best matches your lifestyle</p>
-                    </div>
+                </div>
 
                     {/* Diet Options */}
                     <div className="p-4 sm:p-6 md:p-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {dietOptions.map((diet) => (
-                                <button
-                                    key={diet.id}
-                                    onClick={() => handleDietSelect(diet.id)}
+                    {dietOptions.map((diet) => (
+                        <button
+                            key={diet.id}
+                            onClick={() => handleDietSelect(diet.id)}
                                     className={`relative group p-4 rounded-xl transition-all duration-500 hover:scale-[1.02] ${
                                         selectedDiet === diet.id
                                             ? "bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl shadow-green-100/50"
@@ -150,18 +150,18 @@ const DietPreference = () => {
                                             </div>
                                         )}
                                     </div>
-                                </button>
-                            ))}
-                        </div>
+                        </button>
+                    ))}
+                </div>
 
                         <div className="mt-8 flex justify-center">
-                            <button
+                        <button
                                 className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                                     !selectedDiet || loading
                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                         : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-2xl hover:shadow-green-200 hover:scale-[1.02]"
                                 }`}
-                                onClick={handleNext}
+                            onClick={handleNext}
                                 disabled={!selectedDiet || loading}
                             >
                                 <span className="relative z-10">
@@ -182,7 +182,7 @@ const DietPreference = () => {
                                         </span>
                                     )}
                                 </span>
-                            </button>
+                        </button>
                         </div>
                     </div>
                 </div>

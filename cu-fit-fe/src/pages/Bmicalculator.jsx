@@ -120,8 +120,8 @@ export default function BMICalculator() {
 
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-green-600 mb-2">
-                        BMI Calculator
-                    </h2>
+                    BMI Calculator
+                </h2>
                     <p className="text-gray-600">Calculate your Body Mass Index</p>
                 </div>
 
@@ -154,68 +154,68 @@ export default function BMICalculator() {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Height</label>
                         <div className="flex gap-2">
-                            <input
-                                type="number"
+                    <input
+                        type="number"
                                 className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={height}
-                                onChange={(e) => setHeight(e.target.value)}
+                        value={height}
+                        onChange={(e) => setHeight(e.target.value)}
                                 placeholder="Enter height"
-                            />
-                            <select
+                    />
+                    <select
                                 className="w-24 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={heightUnit}
-                                onChange={(e) => setHeightUnit(e.target.value)}
-                            >
-                                <option value="cm">cm</option>
-                                <option value="feet">feet</option>
-                            </select>
+                        value={heightUnit}
+                        onChange={(e) => setHeightUnit(e.target.value)}
+                    >
+                        <option value="cm">cm</option>
+                        <option value="feet">feet</option>
+                    </select>
                         </div>
-                    </div>
+                </div>
 
                     {/* Weight Input */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Weight</label>
                         <div className="flex gap-2">
-                            <input
-                                type="number"
+                    <input
+                        type="number"
                                 className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={weight}
-                                onChange={(e) => setWeight(e.target.value)}
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
                                 placeholder="Enter weight"
-                            />
-                            <select
+                    />
+                    <select
                                 className="w-24 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={weightUnit}
-                                onChange={(e) => setWeightUnit(e.target.value)}
-                            >
-                                <option value="kg">kg</option>
-                                <option value="lb">lb</option>
-                            </select>
+                        value={weightUnit}
+                        onChange={(e) => setWeightUnit(e.target.value)}
+                    >
+                        <option value="kg">kg</option>
+                        <option value="lb">lb</option>
+                    </select>
                         </div>
-                    </div>
+                </div>
 
                     {/* Age Input */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Age</label>
-                        <input
-                            type="number"
+                <input
+                    type="number"
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                            value={age}
-                            onChange={(e) => setAge(e.target.value)}
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
                             placeholder="Enter age"
-                        />
+                />
                     </div>
 
                     {/* Calculate Button */}
-                    <button
+                <button
                         className="w-full bg-green-500 text-white p-4 rounded-lg font-semibold hover:bg-green-600 transition-all shadow-md hover:shadow-lg"
-                        onClick={calculateBMI}
-                    >
+                    onClick={calculateBMI}
+                >
                         Calculate BMI
-                    </button>
+                </button>
 
                     {/* BMI Result */}
-                    {bmi && (
+                {bmi && (
                         <div className="mt-6 p-6 bg-green-50 rounded-lg text-center">
                             <p className="text-4xl font-bold text-green-600 mb-2">{bmi}</p>
                             <p className="text-lg font-medium text-gray-700">{comment}</p>
@@ -235,17 +235,17 @@ export default function BMICalculator() {
                                     <span>Obese</span>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                    </div>
+                )}
 
                     {/* Save Button */}
-                    <button
+                <button
                         className="w-full mt-4 bg-white text-green-600 font-semibold px-4 py-3 rounded-lg shadow-sm border border-green-200 hover:bg-green-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={handleSave}
-                        disabled={!bmi || loading}
-                    >
-                        {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
-                    </button>
+                    onClick={handleSave}
+                    disabled={!bmi || loading}
+                >
+                    {loading ? "Saving..." : isEditing ? "Save Changes" : "Next"}
+                </button>
                 </div>
             </div>
         </div>

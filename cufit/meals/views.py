@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import MealPlan, UserMealPlan, Meal
 from users.models import Profile
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import MealPlanSerializer, UserMealPlanSerializer, MealSerializer
@@ -14,7 +14,7 @@ import random
 
 
 class UserMealPlanViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]  # Ensuring only authenticated users access
+    permission_classes = [IsAuthenticated]
 
     def list(self, request):
         try:
@@ -46,113 +46,62 @@ class UserMealPlanViewSet(viewsets.ViewSet):
             return Response({"error": str(e)}, status=500)
 
 
-@csrf_exempt
-def get_user_meal_plan(request):
-    """ Fetch meal plan for a specific user based on profile preferences """
-    if request.method == "GET":
-        try:
-            user_id = request.GET.get('user_id', None)
-            date = request.GET.get('date', datetime.date.today())
-
-            if not user_id:
-                return JsonResponse({"error": "User ID is required"}, status=400)
-
-            # Get user profile
-            user_profile = get_object_or_404(Profile, user_id=user_id)
-
-            # Get matched meals based on user's profile
-            matched_meals = MealPlan.objects.filter(
-                diet_selection=user_profile.diet_selection,
-                diet_preference=user_profile.diet_preference,
-                goal_selection=user_profile.goal_selection
-            )
-
-            # Fetch or create the user's meal plan for the given date
-            user_meal_plan, created = UserMealPlan.objects.get_or_create(user_id=user_id, date=date)
-
-            if created and matched_meals.exists():
-                user_meal_plan.breakfast.set(matched_meals[:1])
-                user_meal_plan.lunch.set(matched_meals[1:2])
-                user_meal_plan.dinner.set(matched_meals[2:3])
-                user_meal_plan.snacks.set(matched_meals[3:4])
-                user_meal_plan.save()
-
-            response_data = {
-                "breakfast": [{"id": meal.id, "name": meal.name, "calories": meal.calories} for meal in user_meal_plan.breakfast.all()],
-                "lunch": [{"id": meal.id, "name": meal.name, "calories": meal.calories} for meal in user_meal_plan.lunch.all()],
-                "dinner": [{"id": meal.id, "name": meal.name, "calories": meal.calories} for meal in user_meal_plan.dinner.all()],
-                "snacks": [{"id": meal.id, "name": meal.name, "calories": meal.calories} for meal in user_meal_plan.snacks.all()]
-            }
-
-            return JsonResponse(response_data, safe=False)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_meal_plan(request):
     try:
-        # Get user's profile
-        user_profile = get_object_or_404(Profile, user=request.user)
+        user = request.user
+        profile = Profile.objects.get(user=user)
         
         # Get user preferences
-        diet_preference = user_profile.diet_preference
-        goal_selection = user_profile.goal_selection
-        cooking_time = user_profile.cooking_time_preference
+        diet_selection = profile.diet_selection
+        diet_preference = profile.diet_preference
+        cooking_time = profile.cooking_time_preference
         
-        # Base query to filter meals based on user preferences
-        base_query = Q(
-            diet_preference=diet_preference,
-            goal_selection=goal_selection,
-            cooking_time=cooking_time
-        )
+        # Map cooking time preferences to model choices
+        cooking_time_mapping = {
+            '10-20 minutes': '10-20',
+            '20-30 minutes': '20-30',
+            '30-45 minutes': '30-45',
+            '45+ minutes': '45+'
+        }
         
-        # Get meals for each meal type
-        def get_meals_for_type(meal_type, limit=3):
-            meals = list(MealPlan.objects.filter(
+        # Base query for meals
+        base_query = Q(diet_selection=diet_selection) | Q(diet_preference=diet_preference)
+        if cooking_time in cooking_time_mapping:
+            base_query &= Q(cooking_time=cooking_time_mapping[cooking_time])
+        
+        # Get meals for each type
+        meal_types = ['breakfast', 'lunch', 'dinner', 'snacks']
+        meal_plan = {}
+        
+        for meal_type in meal_types:
+            # Try to get meals matching all preferences
+            meals = MealPlan.objects.filter(
                 base_query,
                 meal_type=meal_type
-            ).values(
-                'meal_id',
-                'name',
-                'meal_type',
-                'diet_preference',
-                'goal_selection',
-                'cooking_time',
-                'calories',
-                'protein',
-                'carbs',
-                'fat',
-                'recipe_link',
-                'instructions'
-            ))
+            ).order_by('?')[:3]  # Get up to 3 random meals
             
-            # Randomly select meals up to the limit
-            return random.sample(meals, min(len(meals), limit))
-        
-        # Get meals for each meal type
-        meal_plan = {
-            'breakfast': get_meals_for_type('breakfast'),
-            'lunch': get_meals_for_type('lunch'),
-            'dinner': get_meals_for_type('dinner'),
-            'snacks': get_meals_for_type('snacks')
-        }
+            # If no exact matches, try to get meals based on diet preferences only
+            if not meals.exists():
+                meals = MealPlan.objects.filter(
+                    Q(diet_selection=diet_selection) | Q(diet_preference=diet_preference),
+                    meal_type=meal_type
+                ).order_by('?')[:3]
+            
+            meal_plan[meal_type] = list(meals.values())
         
         return Response(meal_plan)
         
     except Profile.DoesNotExist:
         return Response(
-            {'error': 'User profile not found. Please complete your profile first.'},
-            status=404
+            {"error": "User profile not found. Please complete your profile setup."},
+            status=status.HTTP_404_NOT_FOUND
         )
     except Exception as e:
         return Response(
-            {'error': str(e)},
-            status=500
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
 
@@ -163,10 +112,6 @@ def get_meals(request):
     serializer = MealSerializer(meals, many=True)
     return Response({"meals": serializer.data})
 
-
-from rest_framework import viewsets
-from .models import MealPlan
-from .serializers import MealPlanSerializer
 
 class MealPlanViewSet(viewsets.ModelViewSet):
     queryset = MealPlan.objects.all()

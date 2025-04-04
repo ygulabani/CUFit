@@ -114,29 +114,29 @@ const StretchingPreference = () => {
                         <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                             <span className="text-2xl">🎯</span>
                             Make Your Choice
-                        </h2>
-                        
-                        {error && (
+                </h2>
+                
+                {error && (
                             <div className="p-4 bg-red-50 border border-red-100 rounded-xl">
                                 <p className="text-red-600 text-center">{error}</p>
-                            </div>
-                        )}
+                    </div>
+                )}
 
-                        <div className="space-y-4">
-                            <button
-                                onClick={() => handleStretchingChoice(true)}
+                <div className="space-y-4">
+                    <button
+                        onClick={() => handleStretchingChoice(true)}
                                 className="w-full bg-gradient-to-r from-emerald-500 to-green-500 text-white px-6 py-4 rounded-xl hover:shadow-lg hover:shadow-green-200 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 group"
-                            >
+                    >
                                 <span className="text-xl group-hover:rotate-12 transition-transform duration-300">🎉</span>
                                 Yes, Include Stretching Exercises
-                            </button>
-                            <button
-                                onClick={() => handleStretchingChoice(false)}
+                    </button>
+                    <button
+                        onClick={() => handleStretchingChoice(false)}
                                 className="w-full bg-white text-gray-700 px-6 py-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 group"
-                            >
+                    >
                                 <span className="text-xl group-hover:rotate-12 transition-transform duration-300">⏭️</span>
                                 Skip Stretching Exercises
-                            </button>
+                    </button>
                         </div>
 
                         <div className="mt-6 text-center">

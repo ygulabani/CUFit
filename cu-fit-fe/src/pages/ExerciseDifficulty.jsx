@@ -93,12 +93,12 @@ const ExerciseDifficulty = () => {
               Back
             </button>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">
-              Select Your Exercise Difficulty
+            Select Your Exercise Difficulty
             </h2>
             <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
               Choose the intensity level that matches your fitness journey
-            </p>
-          </div>
+          </p>
+        </div>
 
           <div className="p-6 sm:p-8 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -146,7 +146,7 @@ const ExerciseDifficulty = () => {
                           selectedDifficulty === difficulty.level ? "text-green-700" : "text-gray-800"
                         }`}>
                           {difficulty.name}
-                        </h3>
+              </h3>
                         <p className={`text-sm transition-colors duration-300 ${
                           selectedDifficulty === difficulty.level ? "text-green-600" : "text-gray-500"
                         }`}>
@@ -174,15 +174,15 @@ const ExerciseDifficulty = () => {
                       </div>
                     </div>
                   )}
-                </button>
-              ))}
-            </div>
+            </button>
+          ))}
+        </div>
 
-            {selectedDifficulty && (
-              <div className="mt-8 text-center">
-                <button
-                  onClick={handleNext}
-                  disabled={loading}
+        {selectedDifficulty && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={handleNext}
+              disabled={loading}
                   className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                     loading
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -207,9 +207,9 @@ const ExerciseDifficulty = () => {
                       </span>
                     )}
                   </span>
-                </button>
-              </div>
-            )}
+            </button>
+          </div>
+        )}
           </div>
         </div>
       </div>

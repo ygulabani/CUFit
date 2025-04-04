@@ -157,15 +157,15 @@ export default function GoalSelection() {
                 <div className="bg-white/70 backdrop-blur-lg rounded-[2rem] shadow-2xl overflow-hidden border border-white/20">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 sm:p-8 md:p-10 relative">
-                        <button 
-                            onClick={() => isEditing ? navigate("/edit-preferences") : navigate(-1)}
+                <button 
+                    onClick={() => isEditing ? navigate("/edit-preferences") : navigate(-1)}
                             className="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white font-medium px-4 py-2 rounded-full hover:bg-white/30 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-green-800/10"
-                        >
+                >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                             </svg>
-                            Back
-                        </button>
+                    Back
+                </button>
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">Choose Your Fitness Goal</h2>
                         <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">Select the goal that best matches your fitness journey</p>
                     </div>
@@ -173,16 +173,16 @@ export default function GoalSelection() {
                     {/* Goals Grid */}
                     <div className="p-4 sm:p-6 md:p-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                            {fitnessGoals.map((goal) => (
-                                <button
-                                    key={goal.id}
+                    {fitnessGoals.map((goal) => (
+                        <button
+                            key={goal.id}
                                     className={`relative group p-4 rounded-xl transition-all duration-500 hover:scale-[1.02] ${
-                                        selectedGoal === goal.id
+                                selectedGoal === goal.id
                                             ? "bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl shadow-green-100/50"
                                             : "bg-white/50 hover:bg-white shadow-lg hover:shadow-xl"
-                                    }`}
-                                    onClick={() => setSelectedGoal(goal.id)}
-                                >
+                            }`}
+                            onClick={() => setSelectedGoal(goal.id)}
+                        >
                                     <div className="flex items-start gap-3">
                                         <div className={`text-2xl sm:text-3xl p-3 rounded-xl transition-all duration-300 ${
                                             selectedGoal === goal.id
@@ -213,20 +213,20 @@ export default function GoalSelection() {
                                             </div>
                                         </div>
                                     )}
-                                </button>
-                            ))}
-                        </div>
+                        </button>
+                    ))}
+                </div>
 
                         <div className="mt-8 flex justify-center">
-                            <button
+                <button
                                 className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                                     !selectedGoal || loading
                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                         : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-2xl hover:shadow-green-200 hover:scale-[1.02]"
                                 }`}
-                                onClick={handleSave}
-                                disabled={!selectedGoal || loading}
-                            >
+                    onClick={handleSave}
+                    disabled={!selectedGoal || loading}
+                >
                                 <span className="relative z-10">
                                     {loading ? (
                                         <span className="flex items-center gap-2">
@@ -245,7 +245,7 @@ export default function GoalSelection() {
                                         </span>
                                     )}
                                 </span>
-                            </button>
+                </button>
                         </div>
                     </div>
                 </div>

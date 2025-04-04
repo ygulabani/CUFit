@@ -177,151 +177,151 @@ const PainAndInjuryForm = () => {
             </h2>
             <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
               Help us customize your workout plan by sharing any pain or injuries
-            </p>
-          </div>
+          </p>
+        </div>
 
           <div className="p-6 sm:p-8 md:p-10">
-            {/* Pain Areas */}
+        {/* Pain Areas */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Areas of Pain
+            Areas of Pain
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {painAreas.map((area) => (
-                  <button
-                    key={area}
-                    onClick={() =>
-                      handleToggle(selectedPainAreas, setSelectedPainAreas, area)
-                    }
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                      selectedPainAreas.includes(area)
-                        ? "bg-green-500 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                    }`}
-                  >
-                    {area}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Injuries */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Current Injuries or Limitations
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {injuriesList.map((injury) => (
-                  <button
-                    key={injury}
-                    onClick={() =>
-                      handleToggle(selectedInjuries, setSelectedInjuries, injury)
-                    }
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                      selectedInjuries.includes(injury)
-                        ? "bg-green-500 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                    }`}
-                  >
-                    {injury}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Surgeries */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Recent Surgeries
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {surgeriesList.map((surgery) => (
-                  <button
-                    key={surgery}
-                    onClick={() =>
-                      handleToggle(selectedSurgeries, setSelectedSurgeries, surgery)
-                    }
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                      selectedSurgeries.includes(surgery)
-                        ? "bg-green-500 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                    }`}
-                  >
-                    {surgery}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Motion Limitations */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Range of Motion Limitations
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {motionLimitationsList.map((limitation) => (
-                  <button
-                    key={limitation}
-                    onClick={() =>
-                      handleToggle(
-                        selectedMotionLimitations,
-                        setSelectedMotionLimitations,
-                        limitation
-                      )
-                    }
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-                      selectedMotionLimitations.includes(limitation)
-                        ? "bg-green-500 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
-                    }`}
-                  >
-                    {limitation}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Medical Conditions */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Medical Conditions
-              </h3>
-              <select
-                value={selectedMedicalCondition}
-                onChange={(e) => setSelectedMedicalCondition(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {painAreas.map((area) => (
+              <button
+                key={area}
+                onClick={() =>
+                  handleToggle(selectedPainAreas, setSelectedPainAreas, area)
+                }
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                  selectedPainAreas.includes(area)
+                    ? "bg-green-500 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                }`}
               >
-                {medicalConditions.map((condition) => (
-                  <option key={condition} value={condition}>
-                    {condition}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {area}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            {/* Pain Level */}
+        {/* Injuries */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Pain Level During Movement
+            Current Injuries or Limitations
               </h3>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                value={painLevel}
-                onChange={(e) => setPainLevel(e.target.value)}
-                className="w-full"
-              />
-              <p className="text-gray-600 text-center mt-2">
-                Pain Level: {painLevel}/10
-              </p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {injuriesList.map((injury) => (
+              <button
+                key={injury}
+                onClick={() =>
+                  handleToggle(selectedInjuries, setSelectedInjuries, injury)
+                }
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                  selectedInjuries.includes(injury)
+                    ? "bg-green-500 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                }`}
+              >
+                {injury}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Surgeries */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Recent Surgeries
+              </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {surgeriesList.map((surgery) => (
+              <button
+                key={surgery}
+                onClick={() =>
+                  handleToggle(selectedSurgeries, setSelectedSurgeries, surgery)
+                }
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                  selectedSurgeries.includes(surgery)
+                    ? "bg-green-500 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                }`}
+              >
+                {surgery}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Motion Limitations */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Range of Motion Limitations
+              </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {motionLimitationsList.map((limitation) => (
+              <button
+                key={limitation}
+                onClick={() =>
+                  handleToggle(
+                    selectedMotionLimitations,
+                    setSelectedMotionLimitations,
+                    limitation
+                  )
+                }
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                  selectedMotionLimitations.includes(limitation)
+                    ? "bg-green-500 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                }`}
+              >
+                {limitation}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Medical Conditions */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Medical Conditions
+              </h3>
+          <select
+            value={selectedMedicalCondition}
+            onChange={(e) => setSelectedMedicalCondition(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            {medicalConditions.map((condition) => (
+              <option key={condition} value={condition}>
+                {condition}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Pain Level */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Pain Level During Movement
+              </h3>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            value={painLevel}
+            onChange={(e) => setPainLevel(e.target.value)}
+            className="w-full"
+          />
+          <p className="text-gray-600 text-center mt-2">
+            Pain Level: {painLevel}/10
+          </p>
+        </div>
 
             {/* Submit Button */}
             <div className="mt-8 text-center">
-              <button
-                onClick={handleNext}
-                disabled={loading}
+          <button
+            onClick={handleNext}
+            disabled={loading}
                 className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                   loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-2xl hover:shadow-green-200 hover:scale-[1.02]"
                 }`}
@@ -344,7 +344,7 @@ const PainAndInjuryForm = () => {
                     </span>
                   )}
                 </span>
-              </button>
+          </button>
             </div>
           </div>
         </div>

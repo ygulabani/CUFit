@@ -102,12 +102,12 @@ const MealPlan = () => {
                             Back
                         </button>
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">
-                            Select Your Meals
+                        Select Your Meals
                         </h2>
                         <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
-                            Choose which meals you would like to include in your plan
-                        </p>
-                    </div>
+                        Choose which meals you would like to include in your plan
+                    </p>
+                </div>
 
                     <div className="p-6 sm:p-8 md:p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -116,12 +116,12 @@ const MealPlan = () => {
                                 { id: "lunch", name: "Lunch", icon: "🥪", description: "Midday nourishment" },
                                 { id: "dinner", name: "Dinner", icon: "🍽️", description: "Evening delight" },
                                 { id: "snacks", name: "Snacks", icon: "🍎", description: "Healthy bites" },
-                            ].map((meal) => (
-                                <button
-                                    key={meal.id}
-                                    onClick={() => handleMealToggle(meal.id)}
+                    ].map((meal) => (
+                        <button
+                            key={meal.id}
+                            onClick={() => handleMealToggle(meal.id)}
                                     className={`group relative p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
-                                        selectedMeals.includes(meal.id)
+                                selectedMeals.includes(meal.id)
                                             ? "bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl shadow-green-100/50"
                                             : "bg-white/50 hover:bg-white shadow-lg hover:shadow-xl"
                                     }`}
@@ -135,8 +135,8 @@ const MealPlan = () => {
                                         <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
                                             selectedMeals.includes(meal.id) ? "text-green-700" : "text-gray-800"
                                         }`}>
-                                            {meal.name}
-                                        </h3>
+                                {meal.name}
+                            </h3>
                                         <p className={`text-sm transition-colors duration-300 ${
                                             selectedMeals.includes(meal.id) ? "text-green-600" : "text-gray-500"
                                         }`}>
@@ -157,15 +157,15 @@ const MealPlan = () => {
                                             </div>
                                         </div>
                                     )}
-                                </button>
-                            ))}
-                        </div>
+                        </button>
+                    ))}
+                </div>
 
-                        {selectedMeals.length > 0 && (
-                            <div className="mt-8 text-center">
-                                <button
-                                    onClick={handleNext}
-                                    disabled={loading}
+                {selectedMeals.length > 0 && (
+                    <div className="mt-8 text-center">
+                        <button
+                            onClick={handleNext}
+                            disabled={loading}
                                     className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                                         loading
                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -190,9 +190,9 @@ const MealPlan = () => {
                                             </span>
                                         )}
                                     </span>
-                                </button>
-                            </div>
-                        )}
+                        </button>
+                    </div>
+                )}
                     </div>
                 </div>
             </div>

@@ -21,7 +21,7 @@ const ActivityLevelSelection = () => {
             const fetchCurrentLevel = async () => {
                 try {
                     const response = await fetch("http://localhost:8000/workout/get-profile/", {
-                        headers: {
+                        headers: { 
                             Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json"
                         },
@@ -61,8 +61,8 @@ const ActivityLevelSelection = () => {
 
             if (response.ok) {
                 toast.success("Activity level saved successfully!");
-                if (isEditing) {
-                    navigate("/edit-preferences");
+            if (isEditing) {
+                navigate("/edit-preferences");
                 } else {
                     navigate("/exercise-difficulty");
                 }
@@ -98,7 +98,7 @@ const ActivityLevelSelection = () => {
                         <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
                             How active are you in your daily life?
                         </p>
-                    </div>
+                </div>
 
                     <div className="p-6 sm:p-8 md:p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,11 +139,11 @@ const ActivityLevelSelection = () => {
                                     details: "You have a physically demanding job and intense workout routine."
                                 }
                             ].map((activity) => (
-                                <button
-                                    key={activity.level}
-                                    onClick={() => setSelectedLevel(activity.level)}
+                        <button
+                            key={activity.level}
+                            onClick={() => setSelectedLevel(activity.level)}
                                     className={`group relative p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
-                                        selectedLevel === activity.level
+                                selectedLevel === activity.level
                                             ? "bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl shadow-green-100/50"
                                             : "bg-white/50 hover:bg-white shadow-lg hover:shadow-xl"
                                     }`}
@@ -185,16 +185,16 @@ const ActivityLevelSelection = () => {
                                                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                                                 </svg>
-                                            </div>
-                                        </div>
+                                </div>
+                            </div>
                                     )}
-                                </button>
-                            ))}
-                        </div>
+                        </button>
+                    ))}
+                </div>
 
                         {selectedLevel && (
                             <div className="mt-8 text-center">
-                                <button
+                    <button
                                     onClick={handleNext}
                                     disabled={loading}
                                     className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
@@ -221,7 +221,7 @@ const ActivityLevelSelection = () => {
                                             </span>
                                         )}
                                     </span>
-                                </button>
+                    </button>
                             </div>
                         )}
                     </div>

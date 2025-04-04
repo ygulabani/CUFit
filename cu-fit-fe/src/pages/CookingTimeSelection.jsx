@@ -109,9 +109,9 @@ const CookingTimeSelection = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-4 sm:p-6 md:p-8">
       <div className="h-full max-w-4xl mx-auto">
         <div className="bg-white/70 backdrop-blur-lg rounded-[2rem] shadow-2xl overflow-hidden border border-white/20">
-          {/* Header */}
+        {/* Header */}
           <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 sm:p-8 md:p-10 relative">
-            <button 
+            <button
               onClick={() => isEditing ? navigate("/edit-preferences") : navigate(-1)}
               className="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white font-medium px-4 py-2 rounded-full hover:bg-white/30 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-green-800/10"
             >
@@ -167,19 +167,19 @@ const CookingTimeSelection = () => {
                       </div>
                     )}
                   </div>
-                </button>
-              ))}
-            </div>
+            </button>
+          ))}
+        </div>
 
             <div className="mt-8 flex justify-center">
-              <button
+          <button
                 className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                   !selectedTime || loading
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-2xl hover:shadow-green-200 hover:scale-[1.02]"
                 }`}
-                onClick={handleNext}
-                disabled={!selectedTime || loading}
+            onClick={handleNext}
+            disabled={!selectedTime || loading}
               >
                 <span className="relative z-10">
                   {loading ? (
@@ -199,7 +199,7 @@ const CookingTimeSelection = () => {
                     </span>
                   )}
                 </span>
-              </button>
+          </button>
             </div>
           </div>
         </div>

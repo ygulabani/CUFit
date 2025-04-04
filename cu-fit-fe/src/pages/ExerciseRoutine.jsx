@@ -105,19 +105,19 @@ const ExerciseRoutine = () => {
                             Back
                         </button>
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2 tracking-tight">
-                            Select Your Exercise Routine
+                        Select Your Exercise Routine
                         </h2>
                         <p className="text-green-50 text-center text-sm sm:text-base md:text-lg">
                             Please choose one exercise routine that best fits your fitness goals
-                        </p>
-                    </div>
+                    </p>
+                </div>
 
                     <div className="p-6 sm:p-8 md:p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {exerciseOptions.map((exercise) => (
-                                <button
-                                    key={exercise.id}
-                                    onClick={() => handleExerciseSelect(exercise.id)}
+                    {exerciseOptions.map((exercise) => (
+                        <button
+                            key={exercise.id}
+                            onClick={() => handleExerciseSelect(exercise.id)}
                                     className={`group relative p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
                                         selectedExercise === exercise.id
                                             ? "bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl shadow-green-100/50"
@@ -154,15 +154,15 @@ const ExerciseRoutine = () => {
                                             </div>
                                         </div>
                                     )}
-                                </button>
-                            ))}
-                        </div>
+                        </button>
+                    ))}
+                </div>
 
-                        {selectedExercise && (
+                {selectedExercise && (
                             <div className="mt-8 text-center">
-                                <button
-                                    onClick={handleNext}
-                                    disabled={loading}
+                        <button
+                            onClick={handleNext}
+                            disabled={loading}
                                     className={`group relative px-8 py-3 rounded-full text-base sm:text-lg font-medium transition-all duration-300 transform ${
                                         loading
                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -187,9 +187,9 @@ const ExerciseRoutine = () => {
                                             </span>
                                         )}
                                     </span>
-                                </button>
-                            </div>
-                        )}
+                        </button>
+                    </div>
+                )}
                     </div>
                 </div>
             </div>
