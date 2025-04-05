@@ -17,16 +17,16 @@ from users.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-# 🔐 Load API key from .env
+# Load API key from .env
 load_dotenv()
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
-# 🧠 Define chatbot state
+# Define chatbot state
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
     finished: bool
 
-# 🤖 System instructions
+# System instructions
 BASE_SYSTEM_INSTRUCTIONS = (
     "system",
     "You are CUFITBot, an AI assistant that helps users with fitness, meal plans, and workouts. "
@@ -39,12 +39,12 @@ BASE_SYSTEM_INSTRUCTIONS = (
 
 WELCOME_MSG = "Welcome to CUFITBot! 💪 How can I assist you today with your fitness journey?"
 
-# 🍽️ Tool: Get Meals
+# Tool: Get Meals
 @tool
 def get_meals(
     diet_selection: str = None,
     diet_preference: str = None,
-    meal_type: str = None  # e.g., "breakfast,lunch,snacks"
+    meal_type: str = None  # like "breakfast,lunch,snacks"
 ) -> str:
     """
     Fetch personalized meals based on the user's diet, preference, and meal types (supports multiple).
@@ -78,7 +78,7 @@ def get_meals(
     except Exception as e:
         return f"Error fetching meals: {str(e)}"
 
-# 💪 Tool: Get Exercises
+# Tool: Get Exercises
 @tool
 def get_exercises(difficulty: str = "Beginner", impact_level: str = "Low") -> str:
     """
@@ -101,12 +101,12 @@ def get_exercises(difficulty: str = "Beginner", impact_level: str = "Low") -> st
     except Exception as e:
         return f"Error fetching exercises: {str(e)}"
 
-# 🧭 Logic to route tool calls
+# Logic to route tool calls
 def maybe_route_to_tools(state: AgentState) -> Literal["tools", "chatbot", "__end__"]:
     msg = state["messages"][-1]
     return "tools" if hasattr(msg, "tool_calls") and msg.tool_calls else END
 
-# 💬 Main chatbot logic
+# Main chatbot logic
 def chatbot(state: AgentState) -> AgentState:
     defaults = {"finished": False}
     new_output = (
@@ -116,7 +116,7 @@ def chatbot(state: AgentState) -> AgentState:
     )
     return defaults | state | {"messages": [new_output]}
 
-# 🧠 Graph definition
+# Graph definition
 tools = [get_meals, get_exercises]
 tool_node = ToolNode(tools)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
@@ -130,7 +130,7 @@ graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 chat_graph = graph_builder.compile()
 
-# 🚀 API Endpoint
+# API Endpoint
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -139,7 +139,7 @@ def cufit_chatbot(request):
         user = request.user
         profile = Profile.objects.get(user=user)
 
-        # 🧪 Debug
+        # Debug
         print("🤖 USER PROFILE DEBUG:")
         print("Diet Selection:", profile.diet_selection)
         print("Diet Preference:", profile.diet_preference)
@@ -164,7 +164,7 @@ Impact Level: {"Low" if profile.stretching_preference else "High"}
 
         personalized_sys_msg = ("system", BASE_SYSTEM_INSTRUCTIONS[1] + "\n\n" + profile_info)
 
-        # 🧠 Run graph loop until END state
+        # Run graph loop until END state
         inputs = {
             "messages": [
                 personalized_sys_msg,
@@ -177,14 +177,12 @@ Impact Level: {"Low" if profile.stretching_preference else "High"}
             "impact_level": "Low" if profile.stretching_preference else "High"
         }
 
-        # 🌀 Loop through the graph until END
-        # 🌀 Loop through graph using stream()
+        # Loop through graph using stream()
         final_state = None
         for state in chat_graph.stream(inputs):
             final_state = state
 
-       # ✅ Final bot reply
-        # ✅ Final bot reply
+        # Final bot reply
         if "chatbot" in final_state and "messages" in final_state["chatbot"]:
           last_message = final_state["chatbot"]["messages"][-1]
           bot_reply = getattr(last_message, "content", "Sorry, I couldn't generate a response.")
