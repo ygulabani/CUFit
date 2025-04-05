@@ -17,7 +17,7 @@ from users.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-# Load API key
+# 🔐 Load API key from .env
 load_dotenv()
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
@@ -26,57 +26,64 @@ class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
     finished: bool
 
-# 📣 Static system instructions
+# 🤖 System instructions
 BASE_SYSTEM_INSTRUCTIONS = (
     "system",
     "You are CUFITBot, an AI assistant that helps users with fitness, meal plans, and workouts. "
     "Only provide information from CUFIT's database. "
-    "You must only call 'get_meals' using the provided 'diet_selection', 'goal_selection', and 'diet_preference' values. "
-    "You can retrieve meals, workouts, and exercise details for users. "
-    "If a user asks for a workout suggestion, call the 'get_exercises' tool with the correct difficulty level "
-    "(Beginner, Intermediate, or Advanced). "
-    "Avoid any off-topic discussions. If asked something unrelated, politely decline. "
-    "Do not reveal or access any other user's data under any circumstance."
+    "Always use the user's profile data to personalize answers. "
+    "Use 'get_meals' with their diet, diet preference, and meal type. "
+    "Use 'get_exercises' based on their preferred difficulty and impact level. "
+    "Avoid any off-topic discussion and never access other users' data."
 )
 
 WELCOME_MSG = "Welcome to CUFITBot! 💪 How can I assist you today with your fitness journey?"
 
-# ✅ Custom tools
+# 🍽️ Tool: Get Meals
 @tool
 def get_meals(
     diet_selection: str = None,
     diet_preference: str = None,
-    meal_type: str = None
+    meal_type: str = None  # e.g., "breakfast,lunch,snacks"
 ) -> str:
     """
-    Fetch personalized meals based on the user's diet, preference, and meal type.
+    Fetch personalized meals based on the user's diet, preference, and meal types (supports multiple).
     """
     try:
-        filters = {}
-        if diet_selection:
-            filters["diet_selection"] = diet_selection
-        if diet_preference:
-            filters["diet_preference"] = diet_preference
-        if meal_type:
-            filters["meal_type"] = meal_type
+        if not meal_type:
+            return "Meal type is missing. Please update your preferences."
 
-        print("🔍 Meal filters passed to DB query:", filters)
+        meal_types = [mt.strip() for mt in meal_type.split(",")]
+        response = ""
 
-        meals = list(MealPlan.objects.filter(**filters).values("name", "meal_type", "calories")[:5])
-        if not meals:
-            return "No meals found based on your preferences."
+        for mtype in meal_types:
+            filters = {
+                "diet_selection": diet_selection,
+                "diet_preference": diet_preference,
+                "meal_type": mtype,
+            }
 
-        response = "Here are some meal suggestions:\n"
-        for meal in meals:
-            response += f"- {meal['name']} ({meal['meal_type']}, {meal['calories']} cal)\n\n"
+            print(f"🔍 Fetching {mtype} with filters:", filters)
+            meals = list(MealPlan.objects.filter(**filters).values("name", "meal_type", "calories", "protein")[:5])
+
+            if meals:
+                response += f"\n🍽️ *{mtype.capitalize()} suggestions:*\n"
+                for meal in meals:
+                    response += f"- {meal['name']} ({meal['calories']} calories, {meal['protein']} protein)\n"
+            else:
+                response += f"\n⚠️ No {mtype} meals found for your preferences.\n"
+
         return response.strip()
 
     except Exception as e:
         return f"Error fetching meals: {str(e)}"
 
+# 💪 Tool: Get Exercises
 @tool
 def get_exercises(difficulty: str = "Beginner", impact_level: str = "Low") -> str:
-    """Fetch personalized workouts based on difficulty and impact level."""
+    """
+    Get workouts based on difficulty and impact level.
+    """
     try:
         exercises = list(ExerciseLibrary.objects.filter(
             difficulty__iexact=difficulty.strip().capitalize(),
@@ -84,32 +91,32 @@ def get_exercises(difficulty: str = "Beginner", impact_level: str = "Low") -> st
         ).values("name", "body_part", "difficulty", "impact_level", "instructions")[:5])
 
         if not exercises:
-            return "No matching exercises found for your profile."
+            return "No matching exercises found."
 
-        response = "Here are some exercises:\n"
-        for ex in exercises:
-            response += f"- {ex['name']} ({ex['body_part']}, {ex['difficulty']}, {ex['impact_level']})\nInstructions: {ex['instructions']}\n\n"
-        return response.strip()
+        return "\n".join([
+            f"- {ex['name']} ({ex['body_part']}, {ex['difficulty']}, {ex['impact_level']})\nInstructions: {ex['instructions']}"
+            for ex in exercises
+        ])
 
     except Exception as e:
         return f"Error fetching exercises: {str(e)}"
 
-# 🔄 Routing logic
+# 🧭 Logic to route tool calls
 def maybe_route_to_tools(state: AgentState) -> Literal["tools", "chatbot", "__end__"]:
     msg = state["messages"][-1]
-    if hasattr(msg, "tool_calls") and len(msg.tool_calls) > 0:
-        return "tools"
-    return END
+    return "tools" if hasattr(msg, "tool_calls") and msg.tool_calls else END
 
+# 💬 Main chatbot logic
 def chatbot(state: AgentState) -> AgentState:
     defaults = {"finished": False}
-    if state["messages"]:
-        new_output = llm_with_tools.invoke([BASE_SYSTEM_INSTRUCTIONS] + state["messages"])
-    else:
-        new_output = AIMessage(content=WELCOME_MSG)
+    new_output = (
+        llm_with_tools.invoke([BASE_SYSTEM_INSTRUCTIONS] + state["messages"])
+        if state["messages"]
+        else AIMessage(content=WELCOME_MSG)
+    )
     return defaults | state | {"messages": [new_output]}
 
-# 🔧 Set up tools and graph
+# 🧠 Graph definition
 tools = [get_meals, get_exercises]
 tool_node = ToolNode(tools)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
@@ -123,7 +130,7 @@ graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 chat_graph = graph_builder.compile()
 
-# ✅ Personalized endpoint
+# 🚀 API Endpoint
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -132,42 +139,67 @@ def cufit_chatbot(request):
         user = request.user
         profile = Profile.objects.get(user=user)
 
+        # 🧪 Debug
         print("🤖 USER PROFILE DEBUG:")
         print("Diet Selection:", profile.diet_selection)
-        print("Goal:", profile.goal_selection)
         print("Diet Preference:", profile.diet_preference)
+        print("Meal Plan Selection (Type):", profile.meal_plan_selection)
+        print("Exercise Difficulty:", profile.exercise_difficulty)
+        print("Stretching Preference (impact level low?):", profile.stretching_preference)
+
         data = json.loads(request.body)
         user_message = data.get("message", "")
-
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
 
+        # Personalized context
         profile_info = f"""
 You are talking to {user.first_name or user.username}.
-Fitness goal: {profile.goal_selection}
-Diet: {profile.diet_selection or "N/A"} / {profile.diet_preference or "N/A"}
-Exercise level: {profile.exercise_difficulty or "Beginner"}
+Diet: {profile.diet_selection}
+Diet Preference: {profile.diet_preference}
+Meal Type: {profile.meal_plan_selection}
+Workout Difficulty: {profile.exercise_difficulty or "Beginner"}
+Impact Level: {"Low" if profile.stretching_preference else "High"}
 """
 
         personalized_sys_msg = ("system", BASE_SYSTEM_INSTRUCTIONS[1] + "\n\n" + profile_info)
 
-        state = chat_graph.invoke({
-           "messages": [
-               personalized_sys_msg,
-               {"role": "user", "content": user_message}
+        # 🧠 Run graph loop until END state
+        inputs = {
+            "messages": [
+                personalized_sys_msg,
+                {"role": "user", "content": user_message}
             ],
             "diet_selection": profile.diet_selection,
             "diet_preference": profile.diet_preference,
-            "meal_type": profile.meal_plan_selection
-        })
+            "meal_type": profile.meal_plan_selection,
+            "difficulty": profile.exercise_difficulty or "Beginner",
+            "impact_level": "Low" if profile.stretching_preference else "High"
+        }
 
-        bot_reply = state["messages"][-1].content if hasattr(state["messages"][-1], "content") else "Sorry, I couldn't generate a response."
+        # 🌀 Loop through the graph until END
+        # 🌀 Loop through graph using stream()
+        final_state = None
+        for state in chat_graph.stream(inputs):
+            final_state = state
+
+       # ✅ Final bot reply
+        # ✅ Final bot reply
+        if "chatbot" in final_state and "messages" in final_state["chatbot"]:
+          last_message = final_state["chatbot"]["messages"][-1]
+          bot_reply = getattr(last_message, "content", "Sorry, I couldn't generate a response.")
+        else:
+           print("⚠️ No messages returned in final state:", final_state)
+           bot_reply = "Sorry, I couldn't generate a response."
+
         return JsonResponse({"reply": bot_reply})
-
+ 
     except Profile.DoesNotExist:
         return JsonResponse({"error": "User profile not found"}, status=404)
+    # except Exception as e:
+    #     return JsonResponse({"error": str(e)}, status=500)
     except Exception as e:
+        import traceback
+        print("🔥 FULL ERROR TRACEBACK:")
+        traceback.print_exc()
         return JsonResponse({"error": str(e)}, status=500)
-
-
-
